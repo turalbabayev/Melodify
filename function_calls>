@@ -1,0 +1,44 @@
+<invoke name="list_dir">
+<parameter name="relative_workspace_path">.</parameter>
+<parameter name="explanation">Mevcut dosya yapısını kontrol ediyorum</parameter>
+</invoke>
+
+<invoke name="grep_search">
+<parameter name="query">struct (HomeNavigationBar|CreditDisplay|NotificationButton|QuickStartCard)</parameter>
+<parameter name="explanation">Çift tanımlanmış yapıları arıyorum</parameter>
+</invoke>
+
+<invoke name="delete_file">
+<parameter name="target_file">Melodify/Core/Home/HomeView.swift</parameter>
+<parameter name="explanation">Eski HomeView dosyasını siliyorum</parameter>
+</invoke>
+
+<invoke name="grep_search">
+<parameter name="query">init\(hex:</parameter>
+<parameter name="explanation">Color extension tanımlamalarını arıyorum</parameter>
+</invoke>
+
+<invoke name="delete_file">
+<parameter name="target_file">Melodify/Core/Home/Components/HomeNavigationBar.swift</parameter>
+<parameter name="explanation">Eski HomeNavigationBar dosyasını siliyorum</parameter>
+</invoke>
+
+<invoke name="delete_file">
+<parameter name="target_file">Melodify/Core/Home/Components/CreditDisplay.swift</parameter>
+<parameter name="explanation">Eski CreditDisplay dosyasını siliyorum</parameter>
+</invoke>
+
+<invoke name="delete_file">
+<parameter name="target_file">Melodify/Core/Components/NotificationButton.swift</parameter>
+<parameter name="explanation">Eski NotificationButton dosyasını siliyorum</parameter>
+</invoke>
+
+<invoke name="delete_file">
+<parameter name="target_file">Melodify/Core/Components/QuickStartCard.swift</parameter>
+<parameter name="explanation">Eski QuickStartCard dosyasını siliyorum</parameter>
+</invoke>
+
+<invoke name="delete_file">
+<parameter name="target_file">Melodify/Extensions/Color+Extension.swift</parameter>
+<parameter name="explanation">Eski Color extension dosyasını siliyorum</parameter>
+</invoke> 

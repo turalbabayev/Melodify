@@ -15,7 +15,7 @@ struct CustomTabBar: View {
             ZStack {
                 // Ana arka plan
                 Rectangle()
-                    .fill(Color.cardBackground)
+                    .fill(AppColors.cardBackground)
                     .shadow(color: .black.opacity(0.15), radius: 20, y: -5) // Yukarı doğru hafif gölge
                 
                 // Üst kısımda hafif gradient
@@ -23,8 +23,8 @@ struct CustomTabBar: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.primaryPurple.opacity(0.05),
-                                Color.secondaryBlue.opacity(0.03),
+                                AppColors.primaryPurple.opacity(0.05),
+                                AppColors.secondaryBlue.opacity(0.03),
                                 .clear
                             ],
                             startPoint: .top,
@@ -37,7 +37,7 @@ struct CustomTabBar: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.primaryPurple.opacity(0.2),
+                                AppColors.primaryPurple.opacity(0.2),
                                 .clear
                             ],
                             startPoint: .top,

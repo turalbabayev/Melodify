@@ -12,13 +12,13 @@ struct TabButton: View {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [Color.primaryPurple, Color.secondaryBlue],
+                                colors: [AppColors.primaryPurple, AppColors.secondaryBlue],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                         .frame(width: 56, height: 56)
-                        .shadow(color: Color.primaryPurple.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .shadow(color: AppColors.primaryPurple.opacity(0.3), radius: 10, x: 0, y: 5)
                 }
                 
                 Image(systemName: tab.rawValue)
@@ -29,7 +29,7 @@ struct TabButton: View {
                     .background {
                         if selectedTab == tab && tab != .create {
                             Circle()
-                                .fill(Color.primaryPurple.opacity(0.2))
+                                .fill(AppColors.primaryPurple.opacity(0.2))
                                 .matchedGeometryEffect(id: "TAB", in: animation)
                         }
                     }
@@ -40,7 +40,7 @@ struct TabButton: View {
                 Text(tab.title)
                     .font(.caption2)
                     .fontWeight(.medium)
-                    .foregroundStyle(selectedTab == tab ? Color.primaryPurple : .gray)
+                    .foregroundStyle(selectedTab == tab ? AppColors.primaryPurple : .gray)
                     .opacity(selectedTab == tab ? 1 : 0.7)
             }
         }
@@ -57,6 +57,6 @@ struct TabButton: View {
         if tab == .create {
             return .white
         }
-        return selectedTab == tab ? Color.primaryPurple : .gray.opacity(0.8)
+        return selectedTab == tab ? AppColors.primaryPurple : .gray.opacity(0.8)
     }
 } 
