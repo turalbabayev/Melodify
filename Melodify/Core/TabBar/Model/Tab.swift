@@ -1,7 +1,7 @@
 import Foundation
 
 enum Tab: String, CaseIterable {
-    case home = "Home"
+    case home = "Home_Main"
     case search = "Search_Main"
     case create = "Plus_Main"
     case library = "Folder_Main"
