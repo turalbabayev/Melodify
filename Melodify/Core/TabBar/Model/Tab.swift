@@ -9,11 +9,11 @@ enum Tab: String, CaseIterable {
     
     var title: String {
         switch self {
-        case .home: return "Ana Sayfa"
-        case .search: return "Keşfet"
-        case .create: return "Oluştur"
-        case .library: return "Kitaplık"
-        case .settings: return "Ayarlar"
+        case .home: return "Home"
+        case .search: return "Explore"
+        case .create: return "Create"
+        case .library: return "Library"
+        case .settings: return "Settings"
         }
     }
 } 

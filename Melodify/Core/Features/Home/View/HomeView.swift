@@ -15,7 +15,14 @@ struct HomeView: View {
                     mainViewModel.selectedTab = .create
                 }
                 .padding(.horizontal, 16)
+                
+                PopularStylesSection()
+                    .padding(.horizontal, 16)
+                
+                TemplatesSection(viewModel: viewModel)
+                    .padding(.horizontal, 16)
             }
+            .padding(.bottom, 48)
         }
         .background(AppColors.cardBackground)
     }
