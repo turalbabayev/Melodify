@@ -15,16 +15,16 @@ struct CustomTabBar: View {
             ZStack {
                 // Ana arka plan
                 Rectangle()
-                    .fill(.black)
-                    .opacity(0.85)
+                    .fill(Color.cardBackground)
+                    .shadow(color: .black.opacity(0.15), radius: 20, y: -5) // Yukarı doğru hafif gölge
                 
-                // Hafif gradient efekti
+                // Üst kısımda hafif gradient
                 Rectangle()
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.red.opacity(0.08),
-                                Color.red.opacity(0.05),
+                                Color.primaryPurple.opacity(0.05),
+                                Color.secondaryBlue.opacity(0.03),
                                 .clear
                             ],
                             startPoint: .top,
@@ -32,22 +32,29 @@ struct CustomTabBar: View {
                         )
                     )
                 
-                // Çok ince üst çizgi
+                // Üst çizgi
                 Rectangle()
                     .fill(
                         LinearGradient(
                             colors: [
-                                .red.opacity(0.2),
+                                Color.primaryPurple.opacity(0.2),
                                 .clear
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
-                    .frame(height: 0.2)
+                    .frame(height: 0.5)
                     .frame(maxHeight: .infinity, alignment: .top)
-                    .blur(radius: 0.2)
+                    .blur(radius: 0.5)
             }
+            .overlay(
+                // Üst kısımda extra blur efekti
+                Rectangle()
+                    .fill(.ultraThinMaterial.opacity(0.5))
+                    .frame(height: 1)
+                    .frame(maxHeight: .infinity, alignment: .top)
+            )
             .ignoresSafeArea()
         }
     }

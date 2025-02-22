@@ -1,6 +1,39 @@
 import Foundation
 
 class HomeViewModel: ObservableObject {
-    // Ana sayfa için gerekli state ve fonksiyonlar
-    @Published var unreadNotifications: Int = 2 // Test için 2 okunmamış bildirim
+    @Published var credits: Int = 0
+    @Published var subscriptionType: SubscriptionType = .premium
+    
+    private let userService = UserService.shared
+    
+    init() {
+        setupUser()
+    }
+    
+    private func setupUser() {
+        userService.initializeUserIfNeeded()
+        userService.checkAndUpdateMonthlyCredits()
+        updateUserInfo()
+    }
+    
+    private func updateUserInfo() {
+        if let user = userService.currentUser {
+            credits = user.credits
+            subscriptionType = user.subscription
+        }
+    }
+    
+    func useCredits(_ amount: Int) -> Bool {
+        let success = userService.updateCredits(-amount)
+        if success {
+            updateUserInfo()
+        }
+        return success
+    }
+    
+    func addCredits(_ amount: Int) {
+        if userService.updateCredits(amount) {
+            updateUserInfo()
+        }
+    }
 } 

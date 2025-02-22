@@ -9,15 +9,39 @@ struct TabButton: View {
         VStack(spacing: 4) {
             ZStack {
                 if tab == .create {
-                    createButtonBackground
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.primaryPurple, Color.secondaryBlue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 56, height: 56)
+                        .shadow(color: Color.primaryPurple.opacity(0.3), radius: 10, x: 0, y: 5)
                 }
                 
-                tabIcon
+                Image(systemName: tab.rawValue)
+                    .font(tab == .create ? .title2.bold() : .body)
+                    .symbolEffect(.bounce, value: selectedTab == tab)
+                    .foregroundStyle(getIconColor(for: tab))
+                    .frame(width: tab == .create ? 56 : 30, height: tab == .create ? 56 : 30)
+                    .background {
+                        if selectedTab == tab && tab != .create {
+                            Circle()
+                                .fill(Color.primaryPurple.opacity(0.2))
+                                .matchedGeometryEffect(id: "TAB", in: animation)
+                        }
+                    }
             }
             .offset(y: tab == .create ? -25 : 0)
             
             if tab != .create {
-                tabTitle
+                Text(tab.title)
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .foregroundStyle(selectedTab == tab ? Color.primaryPurple : .gray)
+                    .opacity(selectedTab == tab ? 1 : 0.7)
             }
         }
         .frame(maxWidth: .infinity)
@@ -29,46 +53,10 @@ struct TabButton: View {
         }
     }
     
-    private var createButtonBackground: some View {
-        Circle()
-            .fill(
-                LinearGradient(
-                    colors: [Color.red, Color.red.opacity(0.8)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .frame(width: 56, height: 56)
-            .shadow(color: .red.opacity(0.5), radius: 10, x: 0, y: 5)
-    }
-    
-    private var tabIcon: some View {
-        Image(systemName: tab.rawValue)
-            .font(tab == .create ? .title2.bold() : .body)
-            .symbolEffect(.bounce, value: selectedTab == tab)
-            .foregroundStyle(getIconColor(for: tab))
-            .frame(width: tab == .create ? 56 : 30, height: tab == .create ? 56 : 30)
-            .background {
-                if selectedTab == tab && tab != .create {
-                    Circle()
-                        .fill(.red.opacity(0.2))
-                        .matchedGeometryEffect(id: "TAB", in: animation)
-                }
-            }
-    }
-    
-    private var tabTitle: some View {
-        Text(tab.title)
-            .font(.caption2)
-            .fontWeight(.medium)
-            .foregroundStyle(selectedTab == tab ? .red : .gray)
-            .opacity(selectedTab == tab ? 1 : 0.7)
-    }
-    
     private func getIconColor(for tab: Tab) -> Color {
         if tab == .create {
             return .white
         }
-        return selectedTab == tab ? .red : .gray.opacity(0.8)
+        return selectedTab == tab ? Color.primaryPurple : .gray.opacity(0.8)
     }
 } 
