@@ -11,7 +11,6 @@ struct CreditDisplay: View {
             
             HStack(spacing: 8) {
                 Image(systemName: "sparkles")
-                    .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [AppColors.primaryPurple, AppColors.secondaryBlue],

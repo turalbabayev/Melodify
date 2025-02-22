@@ -7,7 +7,7 @@ struct MainView: View {
         NavigationStack {
             ZStack(alignment: .bottom) {
                 TabView(selection: $viewModel.selectedTab) {
-                    HomeView()
+                    HomeView(mainViewModel: viewModel)
                         .tag(Tab.home)
                     
                     SearchView()
@@ -25,6 +25,7 @@ struct MainView: View {
                 .animation(.none, value: viewModel.selectedTab)
                 .gesture(DragGesture())
                 
+                // MiniPlayer'ı kaldırdık, sadece TabBar kaldı
                 CustomTabBar(selectedTab: $viewModel.selectedTab)
             }
         }

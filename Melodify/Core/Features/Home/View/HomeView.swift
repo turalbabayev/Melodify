@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @ObservedObject var mainViewModel: MainViewModel
     
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -10,8 +11,10 @@ struct HomeView: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
                 
-                QuickStartCard()
-                    .padding(.horizontal, 16)
+                QuickStartCard {
+                    mainViewModel.selectedTab = .create
+                }
+                .padding(.horizontal, 16)
             }
         }
         .background(AppColors.cardBackground)
@@ -19,6 +22,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    HomeView(mainViewModel: MainViewModel())
         .preferredColorScheme(.dark)
 } 

@@ -1,11 +1,11 @@
 import Foundation
 
 enum Tab: String, CaseIterable {
-    case home = "house.fill"
-    case search = "magnifyingglass"
-    case create = "plus.circle.fill"
-    case library = "music.note.list"
-    case settings = "gearshape.fill"
+    case home = "Home"
+    case search = "Search_Main"
+    case create = "Plus_Main"
+    case library = "Folder_Main"
+    case settings = "Setting_Main"
     
     var title: String {
         switch self {

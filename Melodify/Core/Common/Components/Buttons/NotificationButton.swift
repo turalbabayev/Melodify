@@ -5,7 +5,7 @@ struct NotificationButton: View {
         Button {
             // Bildirimler açılacak
         } label: {
-            Image(systemName: "bell")
+            Image(systemName: "bell") // Sistem ikonuna geri dönüyoruz
                 .font(.system(size: 20, weight: .medium))
                 .foregroundStyle(.white)
                 .frame(width: 44, height: 44)

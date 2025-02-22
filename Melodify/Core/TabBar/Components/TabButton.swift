@@ -21,7 +21,8 @@ struct TabButton: View {
                         .shadow(color: AppColors.primaryPurple.opacity(0.3), radius: 10, x: 0, y: 5)
                 }
                 
-                Image(systemName: tab.rawValue)
+                Image(tab.rawValue)
+                    .renderingMode(.template)
                     .font(tab == .create ? .title2.bold() : .body)
                     .symbolEffect(.bounce, value: selectedTab == tab)
                     .foregroundStyle(getIconColor(for: tab))

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct QuickStartCard: View {
+    let onCreateTapped: () -> Void
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             HStack(alignment: .top, spacing: 16) {
@@ -23,8 +25,7 @@ struct QuickStartCard: View {
                 
                 Spacer()
                 
-                Image(systemName: "waveform")
-                    .font(.system(size: 32, weight: .medium))
+                Image(systemName: "waveform") // Sistem ikonuna geri dönüyoruz                    .font(.system(size: 32, weight: .medium))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [AppColors.primaryPurple, AppColors.secondaryBlue],
@@ -35,7 +36,7 @@ struct QuickStartCard: View {
             }
             
             Button {
-                // Müzik oluşturma sayfasına git
+                onCreateTapped()
             } label: {
                 HStack {
                     Text("Oluştur")

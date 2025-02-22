@@ -41,4 +41,14 @@
 <invoke name="delete_file">
 <parameter name="target_file">Melodify/Extensions/Color+Extension.swift</parameter>
 <parameter name="explanation">Eski Color extension dosyasını siliyorum</parameter>
+</invoke>
+
+<invoke name="list_dir">
+<parameter name="relative_workspace_path">Melodify/Assets.xcassets</parameter>
+<parameter name="explanation">Assets klasöründeki ikonları kontrol ediyorum</parameter>
+</invoke>
+
+<invoke name="list_dir">
+<parameter name="relative_workspace_path">Melodify/Assets.xcassets/Iconly</parameter>
+<parameter name="explanation">Iconly klasöründeki ikonları kontrol ediyorum</parameter>
 </invoke> 
