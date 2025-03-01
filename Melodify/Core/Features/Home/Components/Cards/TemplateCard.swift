@@ -9,10 +9,9 @@ struct TemplateCard: View {
         Button {
             onSelect()
         } label: {
-            HStack(spacing: 20) {
-                // Sol taraf - İkon ve Başlık
-                HStack(spacing: 16) {
-                    // İkon Container
+            VStack(alignment: .leading, spacing: 16) {
+                // Üst Kısım - İkon ve Kategori
+                HStack {
                     Circle()
                         .fill(template.backgroundColor)
                         .frame(width: 48, height: 48)
@@ -41,23 +40,7 @@ struct TemplateCard: View {
                         }
                         .scaleEffect(isHovered ? 1.08 : 1)
                     
-                    // Başlık ve Açıklama
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(template.title)
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(.white)
-                        
-                        Text(template.description)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(.gray)
-                            .lineLimit(1)
-                    }
-                }
-                
-                Spacer()
-                
-                // Sağ taraf - Kategori ve Ok
-                HStack(spacing: 12) {
+                    Spacer()
                     
                     Text(template.category)
                         .font(.system(size: 12, weight: .medium))
@@ -68,6 +51,52 @@ struct TemplateCard: View {
                             Capsule()
                                 .fill(template.backgroundColor)
                         }
+                }
+                
+                // Başlık ve Açıklama
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(template.title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(.white)
+                    
+                    Text(template.description)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.gray)
+                        .lineLimit(1)
+                }
+                
+                // Özellikler
+                HStack(spacing: 12) {
+                    // Stil
+                    Label {
+                        Text(template.style)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.gray)
+                    } icon: {
+                        Image(systemName: "music.note")
+                            .font(.system(size: 12))
+                            .foregroundStyle(template.gradient[0])
+                    }
+                    
+                    // Tempo
+                    Label {
+                        Text(template.tempo)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.gray)
+                    } icon: {
+                        Image(systemName: "metronome")
+                            .font(.system(size: 12))
+                            .foregroundStyle(template.gradient[0])
+                    }
+                }
+                
+                // Alt Kısım - Kullan Butonu
+                HStack {
+                    Text("Use Prompt")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(template.gradient[0])
+                    
+                    Spacer()
                     
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .medium))
@@ -76,8 +105,7 @@ struct TemplateCard: View {
                         .offset(x: isHovered ? 4 : 0)
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(16)
             .background {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.white.opacity(0.03))

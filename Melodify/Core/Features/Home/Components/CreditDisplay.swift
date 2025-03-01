@@ -5,8 +5,9 @@ struct CreditDisplay: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
+            
             Text("Credits Available")
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 8, weight: .medium))
                 .foregroundStyle(.gray)
             
             HStack(spacing: 8) {
@@ -21,12 +22,12 @@ struct CreditDisplay: View {
                     .symbolEffect(.bounce, options: .repeating)
                 
                 Text("\(viewModel.credits)")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white)
                 
                 if viewModel.subscriptionType == .premium {
                     Text("PRO")
-                        .font(.system(size: 10, weight: .heavy))
+                        .font(.system(size: 9, weight: .heavy))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)

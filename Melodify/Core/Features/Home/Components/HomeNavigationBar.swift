@@ -9,5 +9,6 @@ struct HomeNavigationBar: View {
             Spacer()
             NotificationButton()
         }
+
     }
 } 

@@ -8,6 +8,10 @@ struct MusicTemplate: Identifiable, Hashable {
     let category: String
     let gradient: [Color]
     let backgroundColor: Color
+    let prompt: String
+    let style: String
+    let mood: String
+    let tempo: String
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
