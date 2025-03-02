@@ -55,7 +55,7 @@ struct LargeFeatureCardView: View {
                 }) {
                     Text(buttonText)
                         .foregroundColor(.white)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(.system(size: 16, weight: .medium))
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
                         .background(

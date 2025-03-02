@@ -5,56 +5,17 @@ class HomeViewModel: ObservableObject {
     @Published var credits: Int = 0
     @Published var userName: String = "Tural"
     @Published var subscriptionType: SubscriptionType = .premium
-    @Published var hoveredTemplate: MusicTemplate?
-    @Published var templates: [MusicTemplate] = [
-        .init(
-            title: "Energetic Pop Hit",
-            description: "Upbeat pop song with modern electronic elements",
-            icon: "waveform.path.ecg",
-            category: "Pop",
-            gradient: [AppColors.primaryPurple, AppColors.secondaryBlue],
-            backgroundColor: AppColors.primaryPurple.opacity(0.1),
-            prompt: "Create an energetic pop song with catchy electronic beats, modern synthesizers, and a dynamic chorus. Include a bridge section with atmospheric elements.",
-            style: "Modern Pop",
-            mood: "Energetic",
-            tempo: "128 BPM"
-        ),
-        .init(
-            title: "Dark Trap Vibes",
-            description: "Heavy 808s with atmospheric melodies",
-            icon: "speaker.wave.3.fill",
-            category: "Hip Hop",
-            gradient: [Color(hex: "FF6B6B"), Color(hex: "FF8E8E")],
-            backgroundColor: Color(hex: "FF6B6B").opacity(0.1),
-            prompt: "Generate a dark trap beat with heavy 808 bass, crisp hi-hats, and ethereal pad sounds. Include melodic elements with a mysterious vibe.",
-            style: "Trap",
-            mood: "Dark",
-            tempo: "140 BPM"
-        ),
-        .init(
-            title: "Deep House Journey",
-            description: "Progressive house with deep basslines",
-            icon: "waveform.path.badge.plus",
-            category: "Electronic",
-            gradient: [Color(hex: "3AB795"), Color(hex: "86E3BC")],
-            backgroundColor: Color(hex: "3AB795").opacity(0.1),
-            prompt: "Create a deep house track with rolling basslines, atmospheric pads, and progressive elements. Include breakdown sections with emotional chord progressions.",
-            style: "Deep House",
-            mood: "Groovy",
-            tempo: "124 BPM"
-        ),
-        .init(
-            title: "Chill Study Beats",
-            description: "Perfect for focus and relaxation",
-            icon: "pianokeys",
-            category: "Lo-Fi",
-            gradient: [Color(hex: "845EC2"), Color(hex: "B490E6")],
-            backgroundColor: Color(hex: "845EC2").opacity(0.1),
-            prompt: "Generate a lo-fi hip hop beat with warm vinyl crackles, mellow piano melodies, and soft drum patterns. Include nature sounds and subtle jazz elements.",
-            style: "Lo-Fi Hip Hop",
-            mood: "Relaxed",
-            tempo: "85 BPM"
-        )
+    
+    // Yeni şablon verileri
+    @Published var templates: [TemplateCardModel] = [
+        .init(imageName: "template1", category: "Pop", title: "Funky Beat", styleDescription: "Groovy style"),
+        .init(imageName: "template2", category: "Electronic", title: "Chill Vibes", styleDescription: "Relaxing beats"),
+        .init(imageName: "template3", category: "Hip Hop", title: "Trap Anthem", styleDescription: "Heavy bass"),
+        .init(imageName: "template4", category: "Jazz", title: "Smooth Jazz", styleDescription: "Calm melodies"),
+        .init(imageName: "template4", category: "Rock", title: "Classic Rock", styleDescription: "Timeless hits"),
+        .init(imageName: "template2", category: "Reggae", title: "Island Vibes", styleDescription: "Feel the rhythm"),
+        .init(imageName: "template3", category: "R&B", title: "Soulful Sounds", styleDescription: "Emotional tunes"),
+        .init(imageName: "template1", category: "Indie", title: "Indie Pop", styleDescription: "Fresh sounds")
     ]
     
     private let userService = UserService.shared
@@ -89,12 +50,6 @@ class HomeViewModel: ObservableObject {
             updateUserInfo()
         }
     }
-    
-    func selectTemplate(_ template: MusicTemplate) {
-        // Şablon seçildiğinde yapılacak işlemler
-        print("Seçilen şablon: \(template.title)")
-    }
-    
         
     // Computed property: Mevcut saate göre selamlama metni üretir
     var greetingMessage: String {
@@ -116,9 +71,9 @@ class HomeViewModel: ObservableObject {
         return "👋"
     }
     
-    // View’da ikinci satırda kullandığın “Let’s see what can I do for you?”
+    // View'da ikinci satırda kullandığın "Let's see what can I do for you?"
     // gibi sabit metinleri de buraya koyabilirsin:
     var subHeadline: String {
-        return "Let’s see what can I do for you?"
+        return "Let's see what can I do for you?"
     }
 }
