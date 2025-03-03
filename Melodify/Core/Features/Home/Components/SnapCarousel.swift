@@ -88,4 +88,3 @@ struct SnapCarousel<Content: View, T: Identifiable>: View {
     }
 }
 
-#Preview SnapCarousel(index:, items: <#T##[T]#>, content: <#T##(T) -> Content#>)
