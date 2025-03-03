@@ -2,6 +2,6 @@ import SwiftUI
 
 struct LibraryView: View {
     var body: some View {
-        CarouselView()
+        Text("library view")
     }
 } 
