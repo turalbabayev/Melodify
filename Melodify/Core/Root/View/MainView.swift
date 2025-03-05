@@ -13,7 +13,7 @@ struct MainView: View {
                     SearchView()
                         .tag(Tab.search)
                     
-                    CreateView()
+                    MusicGeneratorView()
                         .tag(Tab.create)
                     
                     LibraryView()
