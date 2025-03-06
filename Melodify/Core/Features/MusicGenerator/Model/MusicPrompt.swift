@@ -15,4 +15,6 @@ struct MusicPrompt {
     var selectedModel: String = "FUZZ-0.8"
     var start: Double = 0.0
     var end: Double = 4.0
+    var title: String = ""
+    var styleofmusic: String = ""
 }

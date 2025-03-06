@@ -3,12 +3,13 @@ import SwiftUI
 struct CustomTextEditor: View {
     @Binding var text: String
     var placeholder: String = "Write something..."
+    var maxCharacterLimit: Int = 100 // Maksimum karakter sayısı
     
-    @State private var dynamicHeight: CGFloat = 100
+    @State var dynamicHeight: CGFloat = 80
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            CustomUITextView(text: $text, dynamicHeight: $dynamicHeight)
+            CustomUITextView(text: $text, dynamicHeight: $dynamicHeight, maxCharacterLimit: maxCharacterLimit)
                 .frame(minHeight: dynamicHeight, maxHeight: .infinity) // Yüksekliği dinamik olarak ayarlayın
                 .padding(8)
                 .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.cardBackground))
@@ -34,6 +35,7 @@ struct CustomTextEditor: View {
 struct CustomUITextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var dynamicHeight: CGFloat
+    var maxCharacterLimit: Int // Maksimum karakter sayısı
     
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
@@ -73,11 +75,16 @@ struct CustomUITextView: UIViewRepresentable {
         }
         
         func textViewDidChange(_ textView: UITextView) {
+            // Karakter sınırını kontrol et
+            if textView.text.count > parent.maxCharacterLimit {
+                textView.text = String(textView.text.prefix(parent.maxCharacterLimit)) // Sınırı aşan karakterleri kes
+            }
+            
             DispatchQueue.main.async {
                 self.parent.text = textView.text
-                let size = CGSize(width: textView.frame.width, height: .infinity)
-                let estimatedHeight = textView.sizeThatFits(size).height
-                self.parent.dynamicHeight = max(80, estimatedHeight + 20) // Minimum yükseklik
+                //let size = CGSize(width: textView.frame.width, height: .infinity)
+                //let estimatedHeight = textView.sizeThatFits(size).height
+                //self.parent.dynamicHeight = max(80, estimatedHeight + 20) // Minimum yükseklik
             }
         }
     }

@@ -26,22 +26,29 @@ struct PromptView: View {
                 .toggleStyle(SwitchToggleStyle(tint: Color.purple))
                 .padding(.horizontal, 16)
 
-            Button(action: {}) {
-                HStack {
-                    Image(systemName: "sparkles")
-                    Text("Oluştur")
-                        .fontWeight(.bold)
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple]), startPoint: .leading, endPoint: .trailing))
-                .foregroundColor(.white)
-                .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.3), radius: 5, x: 0, y: 3)
-            }
-            .padding(.horizontal)
+            
         }
         .padding(.vertical)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 5))
+        .padding(.top, 16)
+        
+        Spacer()
+        
+        Button(action: {}) {
+            HStack {
+                Image(systemName: "sparkles")
+                Text("Oluştur")
+                    .fontWeight(.regular)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(.purple.opacity(0.8))
+            .foregroundColor(.white)
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.3), radius: 5, x: 0, y: 3)
+        }
+        .padding(.horizontal)
+
     }
 }
 
