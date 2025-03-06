@@ -41,7 +41,7 @@ struct ComposeView: View {
                             .padding(.bottom, 10)
                     } else {
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.purple.opacity(0.7))
+                            .fill(Color.black.opacity(0.1))
                             .frame(height: 50)
                             .padding(.horizontal, 16)
                             .overlay(
@@ -50,19 +50,23 @@ struct ComposeView: View {
                                     .font(.system(size: 14))
                                     .padding()
                             )
-                            .transition(.scale) // Ölçek animasyonu
-                            .animation(.easeInOut, value: viewModel.prompt.isInstrumental)
                     }
                     
                     Toggle("Instrumental", isOn: $viewModel.prompt.isInstrumental)
                         .toggleStyle(SwitchToggleStyle(tint: Color.purple))
                         .padding(.horizontal, 16)
+                        .onChange(of: viewModel.prompt.isInstrumental) { newValue in
+                            withAnimation {
+                                // Animasyonlu geçiş için
+                            }
+                        }
                 }
                 .transition(.opacity)
                 .animation(.easeInOut, value: isExpanded)
             }
         }
         .padding(.vertical)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.1)))
     }
 }
 
