@@ -13,19 +13,17 @@ struct MusicGeneratorView: View {
     var body: some View {
         ScrollView {
             VStack {
-                
                 HeaderView()
                 
-                
-                
-                Text("adfjfdsjfdsf")
             }
-            
-
+            .contentShape(Rectangle()) // Tıklanabilir alanı genişletmek için
+            .onTapGesture {
+                // Klavyeyi kapatmak için
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
         }
         .background(AppColors.cardBackground)
     }
-    
 }
 
 private struct HeaderView:View {
@@ -71,7 +69,7 @@ private struct HeaderView:View {
         if viewModel.selectedTab == .prompt {
             PromptView(viewModel: viewModel)
         } else {
-            //ComposeView(viewModel: viewModel)
+            ComposeView(viewModel: viewModel)
         }
     }
 }
