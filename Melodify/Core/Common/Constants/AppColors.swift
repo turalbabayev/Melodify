@@ -5,5 +5,5 @@ enum AppColors {
     static let secondaryBlue = Color(hex: "4169E1")
     static let accentColor = Color(hex: "00BFFF")
     static let darkBackground = Color(hex: "0A0A0F")
-    static let cardBackground = Color(hex: "1A1A23")
-} 
+    static let cardBackground = Color(hex: "0F0F0F")
+}

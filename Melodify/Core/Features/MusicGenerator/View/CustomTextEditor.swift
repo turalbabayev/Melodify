@@ -17,7 +17,7 @@ struct CustomTextEditor: View {
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                 )
-                .frame(maxWidth: UIScreen.main.bounds.width - 40) // Genişliği sabit tut
+                .frame(maxWidth: UIScreen.main.bounds.width - 32) // Genişliği sabit tut
 
             
             if text.isEmpty {
@@ -25,6 +25,7 @@ struct CustomTextEditor: View {
                     .foregroundColor(.white.opacity(0.5))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 16)
+                    .font(.system(size: 12))
             }
         }
         .padding(.horizontal, 16)

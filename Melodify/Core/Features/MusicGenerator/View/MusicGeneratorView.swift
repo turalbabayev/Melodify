@@ -68,8 +68,11 @@ private struct HeaderView:View {
         
         if viewModel.selectedTab == .prompt {
             PromptView(viewModel: viewModel)
+                .padding(.bottom, 70)
         } else {
             ComposeView(viewModel: viewModel)
+                .padding(.bottom, 70)
+
         }
     }
 }

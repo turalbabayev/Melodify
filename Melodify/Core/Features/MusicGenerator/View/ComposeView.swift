@@ -10,15 +10,30 @@ import SwiftUI
 struct ComposeView: View {
     @Namespace private var animation // Animasyon için namespace
     @State private var isTitleExpanded: Bool = true
-    @State private var isLyricsExpanded: Bool = true
+    @State private var isLyricsExpanded: Bool = false // Şarkı sözleri bölümü başlangıçta kapalı
     @State private var isStyleExpanded: Bool = true
-
 
     @ObservedObject var viewModel: MusicGeneratorViewModel
 
     var body: some View {
-        VStack {
-            //MARK: - Title Section
+        VStack(spacing: 16) {
+            titleSection
+            styleSection
+            instrumentalToggleSection
+            lyricsSection
+            saveButton
+        }
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
+    }
+    
+    // MARK: - Title Section
+    private var titleSection: some View {
+        Button {
+            withAnimation {
+                isTitleExpanded.toggle()
+            }
+        } label: {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Text("Title")
@@ -28,42 +43,47 @@ struct ComposeView: View {
                     
                     Spacer()
                     
-                    Button(action: {
-                        withAnimation {
-                            isTitleExpanded.toggle()
-                        }
-                    }) {
-                        Image(systemName: isTitleExpanded ? "chevron.up" : "chevron.down")
-                            .foregroundColor(.white)
-                    }
+                    Image(systemName: isTitleExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.white)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, isLyricsExpanded ? 5 : 0)
 
                 if isTitleExpanded {
-                    VStack(alignment: .leading, spacing: 0) {
-                        CustomTextEditor(text: $viewModel.prompt.title, placeholder: "Enter a title", maxCharacterLimit: 120, dynamicHeight: 20)
-                            .padding(.bottom, 10)
-                        
-                        HStack{
-                            
-                            Spacer()
-                            
-                            // Karakter sayısını göster
-                            Text("\(viewModel.prompt.title.count)/120")
-                                .foregroundColor(viewModel.prompt.title.count >= 120 ? .purple : .white)
-                                .font(.system(size: 12))
-                        }
-                        .padding(.horizontal, 24)
-
-                        
-                    }
+                    titleTextField
                 }
             }
             .padding(.vertical)
-            .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 8))
+            .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 5))
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private var titleTextField: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            CustomTextEditor(text: $viewModel.prompt.title, placeholder: "Enter a title", maxCharacterLimit: 120, dynamicHeight: 20)
+                .padding(.bottom, 10)
+
             
-            //MARK: - Style of Music
+            HStack {
+                Spacer()
+                Text("\(viewModel.prompt.title.count)/120")
+                    .foregroundColor(viewModel.prompt.title.count >= 120 ? .purple : .white)
+                    .font(.system(size: 12))
+            }
+            .padding(.horizontal, 16)
+
+        }
+        
+    }
+    
+    // MARK: - Style Section
+    private var styleSection: some View {
+        Button {
+            withAnimation {
+                isStyleExpanded.toggle()
+            }
+        } label: {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Text("Style of Music")
@@ -73,107 +93,110 @@ struct ComposeView: View {
                     
                     Spacer()
                     
-                    Button(action: {
-                        withAnimation {
-                            isStyleExpanded.toggle()
-                        }
-                    }) {
-                        Image(systemName: isStyleExpanded ? "chevron.up" : "chevron.down")
-                            .foregroundColor(.white)
-                    }
+                    Image(systemName: isStyleExpanded ? "chevron.up" : "chevron.down")
+                        .foregroundColor(.white)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, isLyricsExpanded ? 5 : 0)
 
                 if isStyleExpanded {
-                    VStack(alignment: .leading, spacing: 0) {
-                        CustomTextEditor(text: $viewModel.prompt.title, placeholder: "Enter style of music", maxCharacterLimit: 120, dynamicHeight: 80)
-                            .padding(.bottom, 10)
-                        
-                        HStack{
-                            
-                            Spacer()
-                            
-                            // Karakter sayısını göster
-                            Text("\(viewModel.prompt.title.count)/120")
-                                .foregroundColor(viewModel.prompt.title.count >= 120 ? .purple : .white)
-                                .font(.system(size: 12))
-                        }
-                        .padding(.horizontal, 24)
-
-                        
-                    }
-                }
-            }
-            .padding(.vertical)
-            .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 8))
-            
-            
-            //MARK: - Lyrics Section
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Text("Lyrics")
-                        .font(.system(size: 14))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        withAnimation {
-                            isLyricsExpanded.toggle()
-                        }
-                    }) {
-                        Image(systemName: isLyricsExpanded ? "chevron.up" : "chevron.down")
-                            .foregroundColor(.white)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, isLyricsExpanded ? 5 : 0)
-
-                if isLyricsExpanded {
-                    VStack(alignment: .leading, spacing: 0) {
-                        if !viewModel.prompt.isInstrumental {
-                            CustomTextEditor(text: $viewModel.prompt.text, placeholder: "Write your own lyrics, two verses (8 lines) for the best result", maxCharacterLimit: 2999, dynamicHeight: 80)
-                                .padding(.bottom, 10)
-                                .transition(.opacity) // Opaklık animasyonu
-                            
-                            // Karakter sayısını göster
-                            HStack{
-                                Spacer()
-                                Text("\(viewModel.prompt.text.count)/2999")
-                                    .foregroundColor(viewModel.prompt.text.count >= 2999 ? .purple : .white)
-                                    .font(.system(size: 12))
-                            }
-                            .padding(.horizontal, 24)
-                            .padding(.bottom, 16)
-
-                        } else {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.black.opacity(0.1))
-                                .frame(height: 50)
-                                .padding(.horizontal, 16)
-                                .overlay(
-                                    Text("Instrumental modda yazı yazamazsınız.")
-                                        .foregroundColor(.white)
-                                        .font(.system(size: 14))
-                                        .padding()
-                                )
-                                .transition(.opacity) // Opaklık animasyonu
-                        }
-                        
-                        Toggle("Instrumental", isOn: $viewModel.prompt.isInstrumental)
-                            .toggleStyle(SwitchToggleStyle(tint: Color.purple))
-                            .padding(.horizontal, 16)
-                            
-                    }
-                    .transition(.opacity) // Opaklık animasyonu
-                    .animation(.easeInOut, value: viewModel.prompt.isInstrumental) // Animasyon
+                    styleTextField
                 }
             }
             .padding(.vertical)
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 5))
         }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private var styleTextField: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            CustomTextEditor(text: $viewModel.prompt.styleofmusic, placeholder: "Enter style of music", maxCharacterLimit: 120, dynamicHeight: 80)
+                .padding(.bottom, 10)
+            
+            HStack {
+                Spacer()
+                Text("\(viewModel.prompt.styleofmusic.count)/120")
+                    .foregroundColor(viewModel.prompt.styleofmusic.count >= 120 ? .purple : .white)
+                    .font(.system(size: 12))
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+    
+    // MARK: - Instrumental Toggle Section
+    private var instrumentalToggleSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Toggle("Instrumental", isOn: $viewModel.prompt.isInstrumental)
+                .toggleStyle(SwitchToggleStyle(tint: Color.purple))
+                .padding(.horizontal, 16)
+                .font(.system(size: 14))
+                .fontWeight(.bold)
+        }
+        .padding(.vertical)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 5))
+    }
+    
+    // MARK: - Lyrics Section
+    private var lyricsSection: some View {
+        Group {
+            if !viewModel.prompt.isInstrumental {
+                Button {
+                    withAnimation {
+                        isLyricsExpanded.toggle()
+                    }
+                } label: {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text("Lyrics")
+                                .font(.system(size: 14))
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            Image(systemName: isLyricsExpanded ? "chevron.up" : "chevron.down")
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, isLyricsExpanded ? 5 : 0)
+
+                        if isLyricsExpanded {
+                            lyricsTextField
+                        }
+                    }
+                    .padding(.vertical)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 5))
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+    
+    private var lyricsTextField: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            CustomTextEditor(text: $viewModel.prompt.lyrics, placeholder: "Write your own lyrics, two verses (8 lines) for the best result", maxCharacterLimit: 2999, dynamicHeight: 80)
+                .padding(.bottom, 10)
+                .transition(.opacity) // Opaklık animasyonu
+            
+            HStack {
+                Spacer()
+                Text("\(viewModel.prompt.lyrics.count)/2999")
+                    .foregroundColor(viewModel.prompt.lyrics.count >= 2999 ? .purple : .white)
+                    .font(.system(size: 12))
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
+        }
+    }
+    
+    // MARK: - Save Button
+    private var saveButton: some View {
+        CustomButton(title: "Generate") {
+            // Butona tıklandığında yapılacak işlemler
+            print("Butona tıklandı!")
+        }
+        .padding(.bottom, 16) // Butonun altına boşluk bırak
     }
 }
 

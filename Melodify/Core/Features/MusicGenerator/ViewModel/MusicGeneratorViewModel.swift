@@ -17,6 +17,6 @@ class MusicGeneratorViewModel: ObservableObject {
     }
     
     func generateMusic() {
-        print("Generating music with prompt: \(prompt.text)")
+        print("Generating music with prompt: \(prompt.lyrics)")
     }
 }
