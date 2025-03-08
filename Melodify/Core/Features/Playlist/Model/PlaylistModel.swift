@@ -16,9 +16,3 @@ struct Playlist: Identifiable, Codable {
     }
 }
 
-struct Song: Identifiable, Codable {
-    let id: UUID
-    let title: String
-    let duration: TimeInterval
-    let createdAt: Date
-} 

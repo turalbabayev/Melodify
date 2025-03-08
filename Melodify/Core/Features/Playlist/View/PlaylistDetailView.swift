@@ -116,9 +116,12 @@ struct PlaylistDetailView: View {
                             // Songs List
                             VStack(alignment: .leading, spacing: 16) {
                                 ForEach(playlist.songs) { song in
-                                    SongRow(song: song)
-                                        .background(Color.white.opacity(0.05))
-                                        .cornerRadius(12)
+                                    ModernSongRow(song: song, onFavoriteToggle: {
+                                        // Playlist içindeki şarkının favori durumunu güncelle
+                                        // Bu kısmı PlaylistViewModel'e eklememiz gerekecek
+                                    })
+                                    .background(Color.white.opacity(0.05))
+                                    .cornerRadius(12)
                                 }
                             }
                             .padding(16)
