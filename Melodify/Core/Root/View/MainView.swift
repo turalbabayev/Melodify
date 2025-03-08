@@ -9,8 +9,9 @@ struct MainView: View {
                 HomeView(mainViewModel: MainViewModel())
                     .tag(Tab.home)
                 
-                SearchView()
-                    .tag(Tab.search)
+                //PlaylistView()
+                Text("Playlist View")
+                    .tag(Tab.playlist)
                 
                 MusicGeneratorView()
                     .tag(Tab.create)
