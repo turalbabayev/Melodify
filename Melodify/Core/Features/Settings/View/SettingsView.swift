@@ -35,19 +35,37 @@ struct SettingsView: View {
                                     }
                                 }
                                 .buttonStyle(PlainButtonStyle())
+                                .listRowBackground(Color.black.opacity(0.2))
                             } else {
                                 SettingsRow(item: item)
+                                    .listRowBackground(Color.black.opacity(0.2))
                             }
                         }
                     }
                 }
+                
+                // App Info Section
+                Section {
+                    VStack(spacing: 4) {
+                        Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")")
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                        
+                        Text("Developed by Tural Babayev")
+                            .font(.system(size: 14))
+                            .foregroundColor(.gray)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Settings")
-            .background(Color.black.opacity(0.9))
+            .background(AppColors.cardBackground)
             .scrollContentBackground(.hidden)
+            .scrollIndicators(.hidden)
             .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 60) // TabBar için extra padding
+                Color.clear.frame(height: 60)
             }
         }
     }

@@ -41,7 +41,7 @@ class SettingsViewModel: ObservableObject {
                     icon: "globe",
                     iconColor: .green,
                     title: "Language",
-                    description: languages[selectedLanguage], // Mevcut dili göster
+                    description: languages[selectedLanguage],
                     type: .navigation
                 ),
                 SettingsItem(
@@ -57,6 +57,40 @@ class SettingsViewModel: ObservableObject {
                     title: "Privacy Policy",
                     description: nil,
                     type: .navigation
+                )
+            ]),
+            
+            SettingsSection(title: "Support", items: [
+                SettingsItem(
+                    icon: "star.fill",
+                    iconColor: .yellow,
+                    title: "Rate Us",
+                    description: "Love using Melodify? Let us know!",
+                    type: .button({ 
+                        if let url = URL(string: "itms-apps://apple.com/app/id123456789") {
+                            UIApplication.shared.open(url)
+                        }
+                    })
+                ),
+                SettingsItem(
+                    icon: "envelope.fill",
+                    iconColor: .blue,
+                    title: "Contact Us",
+                    description: "Have questions or feedback?",
+                    type: .button({
+                        if let url = URL(string: "mailto:support@melodify.app") {
+                            UIApplication.shared.open(url)
+                        }
+                    })
+                ),
+                SettingsItem(
+                    icon: "square.and.arrow.up",
+                    iconColor: .green,
+                    title: "Share App",
+                    description: "Share Melodify with friends",
+                    type: .button({
+                        // Share işlemi burada yapılacak
+                    })
                 )
             ]),
             
