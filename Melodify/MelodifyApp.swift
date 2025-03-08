@@ -11,7 +11,8 @@ import SwiftUI
 struct MelodifyApp: App {
     var body: some Scene {
         WindowGroup {
-            MainView()
+            //MainView()
+            LaunchScreen()
         }
     }
 }

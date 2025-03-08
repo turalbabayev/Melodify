@@ -10,7 +10,7 @@ struct MainView: View {
                     .tag(Tab.home)
                 
                 //PlaylistView()
-                Text("Playlist View")
+                PlaylistView()
                     .tag(Tab.playlist)
                 
                 MusicGeneratorView()
