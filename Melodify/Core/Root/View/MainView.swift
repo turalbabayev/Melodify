@@ -1,29 +1,29 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var selectedTab: Tab = .home
+    @StateObject private var mainViewModel = MainViewModel()
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
-                HomeView(mainViewModel: MainViewModel())
+            TabView(selection: $mainViewModel.selectedTab) {
+                HomeView(mainViewModel: mainViewModel)
                     .tag(Tab.home)
                 
                 //PlaylistView()
                 PlaylistView()
                     .tag(Tab.playlist)
                 
-                MusicGeneratorView()
+                MusicGeneratorView(mainViewModel: mainViewModel)
                     .tag(Tab.create)
                 
-                LibraryView()
+                LibraryView(mainViewModel: mainViewModel)
                     .tag(Tab.library)
                 
                 SettingsView()
                     .tag(Tab.settings)
             }
             
-            CustomTabBar(selectedTab: $selectedTab)
+            CustomTabBar(selectedTab: $mainViewModel.selectedTab)
         }
         .edgesIgnoringSafeArea(.bottom)
     }

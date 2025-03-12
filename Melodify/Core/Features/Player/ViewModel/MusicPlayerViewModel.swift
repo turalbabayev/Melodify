@@ -1,72 +1,79 @@
 import Foundation
+import Combine
 
 class MusicPlayerViewModel: ObservableObject {
+    static let shared = MusicPlayerViewModel()
     private let audioPlayer = AudioPlayer.shared
-    @Published var isPlaying = false {
-        didSet {
-            if isPlaying {
-                audioPlayer.play()
-            } else {
-                audioPlayer.pause()
-            }
-        }
-    }
-    @Published var progress: Double = 0 {
-        didSet {
-            if isEditing {
-                let time = progress * audioPlayer.getDuration()
-                audioPlayer.seekTo(time)
-            }
-        }
-    }
+    
+    @Published var currentSong: Song?
+    @Published var isPlaying = false
     @Published var currentTime: TimeInterval = 0
-    @Published var volume: Double = 0.5 {
-        didSet {
-            audioPlayer.setVolume(Float(volume))
-        }
-    }
+    @Published var duration: TimeInterval = 0
+    @Published var progress: Double = 0
+    @Published var volume: Double = 0.5
     @Published var isShuffleOn = false
     @Published var repeatMode: RepeatMode = .off
-    @Published var isEditing = false
+    @Published var isLoading = false
     
-    private var timer: Timer?
+    private var cancellables = Set<AnyCancellable>()
     
     init() {
-        setupTimer()
+        setupBindings()
     }
     
-    private func setupTimer() {
-        // Timer'ı daha sık güncelle (60 FPS)
-        timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            if !self.isEditing {
-                DispatchQueue.main.async {
-                    self.currentTime = self.audioPlayer.getCurrentTime()
-                    self.progress = self.currentTime / self.audioPlayer.getDuration()
-                    
-                    // Şarkı bittiğinde kontrol
-                    if !self.audioPlayer.isPlaying() && self.isPlaying {
-                        self.isPlaying = false
-                    }
+    private func setupBindings() {
+        // İsPlaying durumunu dinle
+        audioPlayer.$isPlaying
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.isPlaying = value
+            }
+            .store(in: &cancellables)
+        
+        // Süre bilgilerini dinle
+        audioPlayer.$currentTime
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.currentTime = value
+                if let duration = self?.duration, duration > 0 {
+                    self?.progress = value / duration
                 }
             }
+            .store(in: &cancellables)
+        
+        audioPlayer.$duration
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.duration = value
+            }
+            .store(in: &cancellables)
+        
+        // Yükleme durumunu dinle
+        audioPlayer.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.isLoading = value
+            }
+            .store(in: &cancellables)
+    }
+    
+    func playSong(_ song: Song) {
+        if currentSong?.id != song.id {
+            audioPlayer.stop()
         }
+        
+        print("ViewModel - Şarkı çalınıyor:", song.title)
+        currentSong = song
+        audioPlayer.play(song)
     }
     
     func togglePlayPause() {
-        isPlaying.toggle()
+        audioPlayer.togglePlayPause()
     }
     
-    func previousTrack() {
-        audioPlayer.stop()
-        audioPlayer.play()
-        isPlaying = true
-    }
-    
-    func nextTrack() {
-        audioPlayer.stop()
-        audioPlayer.play()
-        isPlaying = true
+    func updateProgress(_ newProgress: Double) {
+        let time = newProgress * duration
+        audioPlayer.seekTo(time)
     }
     
     func toggleShuffle() {
@@ -75,18 +82,10 @@ class MusicPlayerViewModel: ObservableObject {
     
     func toggleRepeat() {
         switch repeatMode {
-        case .off:
-            repeatMode = .all
-        case .all:
-            repeatMode = .one
-        case .one:
-            repeatMode = .off
+        case .off: repeatMode = .all
+        case .all: repeatMode = .one
+        case .one: repeatMode = .off
         }
-    }
-    
-    deinit {
-        timer?.invalidate()
-        audioPlayer.stop()
     }
 }
 

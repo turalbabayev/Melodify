@@ -1,7 +1,14 @@
 import SwiftUI
 
 struct LibraryView: View {
-    @StateObject private var viewModel = LibraryViewModel()
+    @StateObject private var viewModel: LibraryViewModel
+    @ObservedObject var mainViewModel: MainViewModel
+    
+    init(mainViewModel: MainViewModel) {
+        _viewModel = StateObject(wrappedValue: LibraryViewModel(mainViewModel: mainViewModel))
+        self.mainViewModel = mainViewModel
+    }
+    
     @State private var selectedTab: LibraryTab = .songs
     
     var body: some View {
@@ -94,9 +101,9 @@ struct SongsTab: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 15) {
                 ForEach(viewModel.songs) { song in
-                    ModernSongRow(song: song, onFavoriteToggle: {
+                    ModernSongRow(song: song) {
                         viewModel.toggleFavorite(song)
-                    })
+                    }
                 }
             }
             .padding(.horizontal, 20)
@@ -108,31 +115,65 @@ struct SongsTab: View {
 struct ModernSongRow: View {
     let song: Song
     let onFavoriteToggle: () -> Void
-    @State private var isPlaying = false
-    @State private var showPlayer = false // Sheet kontrolü için
+    @StateObject private var playerViewModel = MusicPlayerViewModel.shared
+    @State private var showPlayer = false
     
     var body: some View {
         HStack(spacing: 16) {
-            // Song Cover ve Info kısmı - tıklanabilir alan
+            // Song Cover ve Info kısmı
             Button {
-                showPlayer = true
+                if !song.isGenerating && song.url != nil {
+                    showPlayer = true
+                    // Şarkıyı arka planda yüklemeye başla
+                    Task {
+                        await playWithDelay()
+                    }
+                }
             } label: {
                 HStack(spacing: 16) {
                     // Song Cover
                     ZStack {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(
-                                LinearGradient(
-                                    colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
+                        if let imageUrl = song.imageUrl {
+                            AsyncImage(url: imageUrl) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                            }
                             .frame(width: 55, height: 55)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        } else {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: 55, height: 55)
+                        }
                         
-                        Image(systemName: "music.note")
-                            .font(.system(size: 22))
-                            .foregroundColor(.white.opacity(0.8))
+                        if song.isGenerating {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        } else if song.url == nil {
+                            Image(systemName: "exclamationmark.triangle")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white.opacity(0.8))
+                        } else {
+                            Image(systemName: "music.note")
+                                .font(.system(size: 22))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
                     }
                     
                     // Song Info
@@ -141,57 +182,80 @@ struct ModernSongRow: View {
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.white)
                         
-                        Text(formatDuration(song.duration))
-                            .font(.system(size: 14))
-                            .foregroundColor(.gray)
+                        if song.isGenerating {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(song.generationStatus?.generationStep.rawValue ?? "Generating...")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                
+                                // Progress bar
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        Rectangle()
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(height: 2)
+                                        
+                                        Rectangle()
+                                            .fill(Color.purple)
+                                            .frame(width: geometry.size.width * progressValue(for: song.generationStatus ?? .PENDING), height: 2)
+                                    }
+                                }
+                                .frame(height: 2)
+                            }
+                        } else {
+                            Text(formatDuration(song.duration))
+                                .font(.system(size: 14))
+                                .foregroundColor(.gray)
+                        }
                     }
                 }
             }
+            .disabled(song.isGenerating || song.url == nil)
             
             Spacer()
             
-            // Action Buttons
-            HStack(spacing: 12) {
-                Button {
-                    onFavoriteToggle()
-                } label: {
+            // Favorite Button - sadece şarkı hazırsa göster
+            if !song.isGenerating && song.url != nil {
+                Button(action: onFavoriteToggle) {
                     Image(systemName: song.isFavorite ? "heart.fill" : "heart")
-                        .font(.system(size: 18))
+                        .font(.system(size: 22))
                         .foregroundColor(song.isFavorite ? .purple : .gray)
-                }
-                
-                Button {
-                    showPlayer = true
-                } label: {
-                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(.white)
-                        .frame(width: 38, height: 38)
-                        .background(
-                            LinearGradient(
-                                colors: [.purple, .purple.opacity(0.8)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .clipShape(Circle())
                 }
             }
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 15)
-        .background(Color.white.opacity(0.05))
-        .cornerRadius(16)
-        .fullScreenCover(isPresented: $showPlayer, content: {
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(Color.black.opacity(0.3))
+        .cornerRadius(12)
+        .fullScreenCover(isPresented: $showPlayer) {
             MusicPlayerView(song: song)
-               // .edgesIgnoringSafeArea(.all)
-        })
+        }
     }
     
     private func formatDuration(_ duration: TimeInterval) -> String {
         let minutes = Int(duration) / 60
         let seconds = Int(duration) % 60
         return String(format: "%d:%02d", minutes, seconds)
+    }
+    
+    private func progressValue(for status: TaskStatus) -> Double {
+        switch status {
+        case .PENDING: return 0.1
+        case .TEXT_SUCCESS: return 0.3
+        case .FIRST_SUCCESS: return 0.7
+        case .SUCCESS: return 1.0
+        default: return 0.0
+        }
+    }
+    
+    private func playWithDelay() async {
+        // UI'ın düzgün açılması için kısa bir gecikme
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 saniye
+        
+        // Ana thread'de çalıştır
+        await MainActor.run {
+            playerViewModel.playSong(song)
+        }
     }
 }
 
@@ -226,9 +290,9 @@ struct FavoritesTab: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 15) {
                 ForEach(viewModel.favoriteSongs) { song in
-                    ModernSongRow(song: song, onFavoriteToggle: {
+                    ModernSongRow(song: song) {
                         viewModel.toggleFavorite(song)
-                    })
+                    }
                 }
             }
             .padding(.horizontal, 20)
@@ -372,5 +436,5 @@ enum LibraryTab: String, CaseIterable {
 }
 
 #Preview {
-    LibraryView()
+    LibraryView(mainViewModel: MainViewModel())
 } 

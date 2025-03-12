@@ -2,8 +2,9 @@ import SwiftUI
 
 struct CustomTabBar: View {
     @Binding var selectedTab: Tab
+    @StateObject private var playerViewModel = MusicPlayerViewModel.shared
     
-    // TabBar için yeni renkler
+    // TabBar için mevcut renkler
     private let backgroundColor = Color(UIColor(red: 0.02, green: 0.02, blue: 0.02, alpha: 1.0)) // #050505
     private let selectedColor = Color.purple
     private let unselectedColor = Color(UIColor(red: 0.4, green: 0.4, blue: 0.4, alpha: 1.0)) // #666666
@@ -11,6 +12,11 @@ struct CustomTabBar: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // Mini Player
+            if let currentSong = playerViewModel.currentSong {
+                MiniPlayerView(viewModel: playerViewModel, song: currentSong)
+            }
+            
             // Üst çizgi
             Rectangle()
                 .frame(height: 0.5)

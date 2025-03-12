@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct MusicGeneratorView: View {
-    @StateObject private var viewModel = MusicGeneratorViewModel()
+    @StateObject private var viewModel: MusicGeneratorViewModel
+    
+    init(mainViewModel: MainViewModel) {
+        _viewModel = StateObject(wrappedValue: MusicGeneratorViewModel(mainViewModel: mainViewModel))
+    }
     
     var body: some View {
         ScrollView {
             VStack {
-                HeaderView()
-                
+                HeaderView(viewModel: viewModel)
             }
-            .contentShape(Rectangle()) // Tıklanabilir alanı genişletmek için
+            .contentShape(Rectangle())
             .onTapGesture {
-                // Klavyeyi kapatmak için
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
@@ -26,9 +28,9 @@ struct MusicGeneratorView: View {
     }
 }
 
-private struct HeaderView:View {
-    @StateObject private var viewModel = MusicGeneratorViewModel()
-
+private struct HeaderView: View {
+    @ObservedObject var viewModel: MusicGeneratorViewModel
+    
     var body: some View {
         HStack {
             Spacer()
@@ -72,11 +74,10 @@ private struct HeaderView:View {
         } else {
             ComposeView(viewModel: viewModel)
                 .padding(.bottom, 70)
-
         }
     }
 }
 
 #Preview {
-    MusicGeneratorView()
+    MusicGeneratorView(mainViewModel: MainViewModel())
 }

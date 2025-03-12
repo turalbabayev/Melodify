@@ -3,7 +3,7 @@ import SwiftUI
 struct MusicPlayerView: View {
     let song: Song
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = MusicPlayerViewModel()
+    @StateObject private var viewModel = MusicPlayerViewModel.shared // shared instance kullanıyoruz
     @State private var dragOffset: CGFloat = 0
     @State private var showLyrics = false
     
@@ -32,7 +32,7 @@ struct MusicPlayerView: View {
                         // Lyrics View
                         LyricsView(
                             lyrics: song.lyrics ?? [],
-                            currentTime: viewModel.currentTime
+                            currentTime: 0
                         )
                     } else {
                         // Normal Player View
@@ -60,6 +60,7 @@ struct MusicPlayerView: View {
                     withAnimation(.easeOut(duration: 0.2)) {
                         dragOffset = UIScreen.main.bounds.height
                     }
+                    // Sadece view'ı kapatıyoruz, müziği durdurmuyoruz
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         dismiss()
                     }
@@ -70,6 +71,27 @@ struct MusicPlayerView: View {
                 }
             }
         )
+        .onDisappear {
+            // View kapanırken müziği durdurma
+            // viewModel.isPlaying durumunu koruyoruz
+        }
+    }
+    
+    private var defaultCoverView: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(
+                LinearGradient(
+                    colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .frame(width: 300, height: 300)
+            .overlay(
+                Image(systemName: "music.note")
+                    .font(.system(size: 60))
+                    .foregroundColor(.white.opacity(0.8))
+            )
     }
 }
 
@@ -215,10 +237,11 @@ struct PlayerContent: View {
         
         // Progress Bar
         VStack(spacing: 8) {
-            Slider(value: $viewModel.progress, in: 0...1) { editing in
-                viewModel.isEditing = editing
-            }
-            .tint(.white)
+            Slider(value: Binding(
+                get: { viewModel.progress },
+                set: { viewModel.updateProgress($0) }
+            ), in: 0...1)
+            .accentColor(.purple)
             
             HStack {
                 Text(formatDuration(viewModel.currentTime))
@@ -240,13 +263,13 @@ struct PlayerContent: View {
             Button {
                 viewModel.toggleShuffle()
             } label: {
-                Image(systemName: viewModel.isShuffleOn ? "shuffle" : "shuffle")
+                Image(systemName: "shuffle")
                     .font(.system(size: 20))
                     .foregroundColor(viewModel.isShuffleOn ? .purple : .gray)
             }
             
             Button {
-                viewModel.previousTrack()
+                //viewModel.previousTrack()
             } label: {
                 Image(systemName: "backward.fill")
                     .font(.system(size: 24))
@@ -256,13 +279,27 @@ struct PlayerContent: View {
             Button {
                 viewModel.togglePlayPause()
             } label: {
-                Image(systemName: viewModel.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                    .font(.system(size: 64))
-                    .foregroundColor(.white)
+                ZStack {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 64, height: 64)
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .purple))
+                            .scaleEffect(1.5)
+                    } else {
+                        Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
+                            .font(.system(size: 28))
+                            .foregroundColor(.purple)
+                            .offset(x: viewModel.isPlaying ? 0 : 2)
+                    }
+                }
             }
+            .disabled(viewModel.isLoading)
             
             Button {
-                viewModel.nextTrack()
+                //viewModel.nextTrack()
             } label: {
                 Image(systemName: "forward.fill")
                     .font(.system(size: 24))
@@ -287,7 +324,7 @@ struct PlayerContent: View {
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
             
-            Slider(value: $viewModel.volume)
+            Slider(value: $viewModel.volume, in: 0...1)
                 .tint(.white)
             
             Image(systemName: "speaker.wave.3.fill")

@@ -1,0 +1,6 @@
+# Xcode
+.DS_Store
+xcuserdata/
+
+# API Config
+Melodify/Core/Config/APIConfig.swift 

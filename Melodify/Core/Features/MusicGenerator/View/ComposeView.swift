@@ -13,7 +13,7 @@ struct ComposeView: View {
     @State private var isLyricsExpanded: Bool = false // Şarkı sözleri bölümü başlangıçta kapalı
     @State private var isStyleExpanded: Bool = true
 
-    @ObservedObject var viewModel: MusicGeneratorViewModel
+    @StateObject var viewModel: MusicGeneratorViewModel
 
     var body: some View {
         VStack(spacing: 16) {
@@ -22,9 +22,23 @@ struct ComposeView: View {
             instrumentalToggleSection
             lyricsSection
             saveButton
+            
+            if viewModel.isLoading {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.opacity(0.5))
+            }
         }
         .padding(.horizontal, 8)
         .padding(.top, 8)
+        .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+            Button("OK") {
+                viewModel.error = nil
+            }
+        } message: {
+            Text(viewModel.error ?? "")
+        }
     }
     
     // MARK: - Title Section
@@ -61,14 +75,14 @@ struct ComposeView: View {
     
     private var titleTextField: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CustomTextEditor(text: $viewModel.prompt.title, placeholder: "Enter a title", maxCharacterLimit: 120, dynamicHeight: 20)
+            CustomTextEditor(text: $viewModel.musicPrompt.title, placeholder: "Enter a title", maxCharacterLimit: 120, dynamicHeight: 20)
                 .padding(.bottom, 10)
 
             
             HStack {
                 Spacer()
-                Text("\(viewModel.prompt.title.count)/120")
-                    .foregroundColor(viewModel.prompt.title.count >= 120 ? .purple : .white)
+                Text("\(viewModel.musicPrompt.title.count)/120")
+                    .foregroundColor(viewModel.musicPrompt.title.count >= 120 ? .purple : .white)
                     .font(.system(size: 12))
             }
             .padding(.horizontal, 16)
@@ -111,13 +125,13 @@ struct ComposeView: View {
     
     private var styleTextField: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CustomTextEditor(text: $viewModel.prompt.styleofmusic, placeholder: "Enter style of music", maxCharacterLimit: 120, dynamicHeight: 80)
+            CustomTextEditor(text: $viewModel.musicPrompt.style, placeholder: "Enter style of music", maxCharacterLimit: 120, dynamicHeight: 80)
                 .padding(.bottom, 10)
             
             HStack {
                 Spacer()
-                Text("\(viewModel.prompt.styleofmusic.count)/120")
-                    .foregroundColor(viewModel.prompt.styleofmusic.count >= 120 ? .purple : .white)
+                Text("\(viewModel.musicPrompt.style.count)/120")
+                    .foregroundColor(viewModel.musicPrompt.style.count >= 120 ? .purple : .white)
                     .font(.system(size: 12))
             }
             .padding(.horizontal, 16)
@@ -127,7 +141,7 @@ struct ComposeView: View {
     // MARK: - Instrumental Toggle Section
     private var instrumentalToggleSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Toggle("Instrumental", isOn: $viewModel.prompt.isInstrumental)
+            Toggle("Instrumental", isOn: $viewModel.musicPrompt.instrumental)
                 .toggleStyle(SwitchToggleStyle(tint: Color.purple))
                 .padding(.horizontal, 16)
                 .font(.system(size: 14))
@@ -140,7 +154,7 @@ struct ComposeView: View {
     // MARK: - Lyrics Section
     private var lyricsSection: some View {
         Group {
-            if !viewModel.prompt.isInstrumental {
+            if !viewModel.musicPrompt.instrumental {
                 Button {
                     withAnimation {
                         isLyricsExpanded.toggle()
@@ -175,14 +189,14 @@ struct ComposeView: View {
     
     private var lyricsTextField: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CustomTextEditor(text: $viewModel.prompt.lyrics, placeholder: "Write your own lyrics, two verses (8 lines) for the best result", maxCharacterLimit: 2999, dynamicHeight: 80)
+            CustomTextEditor(text: $viewModel.musicPrompt.lyrics, placeholder: "Write your own lyrics, two verses (8 lines) for the best result", maxCharacterLimit: 2999, dynamicHeight: 80)
                 .padding(.bottom, 10)
                 .transition(.opacity) // Opaklık animasyonu
             
             HStack {
                 Spacer()
-                Text("\(viewModel.prompt.lyrics.count)/2999")
-                    .foregroundColor(viewModel.prompt.lyrics.count >= 2999 ? .purple : .white)
+                Text("\(viewModel.musicPrompt.lyrics.count)/2999")
+                    .foregroundColor(viewModel.musicPrompt.lyrics.count >= 2999 ? .purple : .white)
                     .font(.system(size: 12))
             }
             .padding(.horizontal, 16)
@@ -193,14 +207,11 @@ struct ComposeView: View {
     // MARK: - Save Button
     private var saveButton: some View {
         CustomButton(title: "Generate") {
-            // Butona tıklandığında yapılacak işlemler
-            print("Butona tıklandı!")
+            viewModel.generateMusicFromCompose()
         }
-        .padding(.bottom, 16) // Butonun altına boşluk bırak
+        .disabled(viewModel.isLoading)
+        .padding(.bottom, 16)
     }
 }
 
-#Preview {
-    ComposeView(viewModel: MusicGeneratorViewModel())
-        .preferredColorScheme(.dark)
-}
+
