@@ -1,0 +1,58 @@
+// Common
+"settings" = "Ayarlar";
+"cancel" = "İptal";
+"done" = "Tamam";
+
+
+
+
+// Main
+"main_title" = "Melodify";
+"main_welcome" = "Melodify'a Hoş Geldiniz";
+"main_description" = "Şarkı sözlerinizi melodilere dönüştürün";
+"main_get_started" = "Başlayın";
+"main_create_song" = "Şarkı Oluştur";
+"main_recent_songs" = "Son Şarkılar";
+"main_no_songs" = "Henüz şarkı yok";
+"main_no_songs_description" = "Oluşturduğunuz şarkılar burada görünecek";
+"main_subscription_free" = "Ücretsiz";
+"main_subscription_premium" = "Premium";
+"main_credits_remaining" = "%d kredi kaldı";
+"main_credits_avaiable" = "Kullanılabilir Krediler";
+"main_good_morning" = "Günaydın";
+"main_good_afternoon" = "Tünaydın";
+"main_good_evening" = "İyi Akşamlar";
+"main_hello" = "Merhaba";
+"main_subHeadline" = "Bakalım senin için neler yapabilirim?";
+
+
+
+// Tab Bar
+"tab_home" = "Ana Sayfa";
+"tab_library" = "Kitaplık";
+"tab_settings" = "Ayarlar";
+
+// Settings
+"settings_notifications" = "Bildirimler";
+"settings_notifications_description" = "Push bildirimlerini etkinleştir";
+"settings_language" = "Dil";
+"settings_terms" = "Kullanım Koşulları";
+"settings_privacy" = "Gizlilik Politikası";
+"settings_rate_us" = "Bizi Değerlendir";
+"settings_rate_us_description" = "Melodify'ı sevdiniz mi? Bize bildirin!";
+"settings_contact" = "İletişim";
+"settings_contact_description" = "Soru veya geri bildiriminiz mi var?";
+"settings_share" = "Uygulamayı Paylaş";
+"settings_share_description" = "Melodify'ı arkadaşlarınla paylaş";
+"settings_clear_data" = "Verilerimi Temizle";
+"settings_clear_data_description" = "Tüm şarkılarınızı kalıcı olarak silin";
+"settings_credits" = "Mevcut Krediler";
+"settings_credits_description" = "%d kredi kaldı (%@)";
+"settings_choose_language" = "Dil Seçin";
+
+//Library
+"library_title" = "Kitaplık";
+"library_songs" = "Şarkılar";
+"library_favorites" = "Favorilerim";
+"library_empty_state" = "Kitaplığınızda şarkı yok";
+"library_empty_description" = "Kitaplığınızı doldurmak için şarkı oluşturmaya başlayın";

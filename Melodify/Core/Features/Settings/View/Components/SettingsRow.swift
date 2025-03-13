@@ -2,9 +2,7 @@ import SwiftUI
 
 struct SettingsRow: View {
     let item: SettingsItem
-    @State private var isOn: Bool = false
     @State private var sliderValue: Double = 0.5
-    @State private var selectedIndex: Int = 0
     
     var body: some View {
         HStack(spacing: 12) {
@@ -31,10 +29,9 @@ struct SettingsRow: View {
             
             // Control
             switch item.type {
-            case .toggle(let isEnabled):
-                Toggle("", isOn: $isOn)
+            case .toggle(let isOn):
+                Toggle("", isOn: isOn)
                     .toggleStyle(SwitchToggleStyle(tint: .purple))
-                    .onAppear { isOn = isEnabled }
                 
             case .navigation:
                 Image(systemName: "chevron.right")
@@ -50,14 +47,13 @@ struct SettingsRow: View {
                     .frame(width: 100)
                     .onAppear { sliderValue = value }
                 
-            case .picker(let options, let index):
-                Picker("", selection: $selectedIndex) {
-                    ForEach(0..<options.count, id: \.self) { i in
-                        Text(options[i]).tag(i)
-                    }
-                }
-                .pickerStyle(.menu)
-                .onAppear { selectedIndex = index }
+            case .info:
+                EmptyView()
+                
+            case .picker:
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
+                    .font(.system(size: 14))
             }
         }
         .padding(.vertical, 8)

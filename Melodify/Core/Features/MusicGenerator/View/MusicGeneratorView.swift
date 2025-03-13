@@ -15,14 +15,17 @@ struct MusicGeneratorView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack {
-                HeaderView(viewModel: viewModel)
+        VStack {
+            ScrollView {
+                VStack {
+                    HeaderView(viewModel: viewModel)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                }
             }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-            }
+            
         }
         .background(LinearGradient(
             colors: [
@@ -35,6 +38,15 @@ struct MusicGeneratorView: View {
             endPoint: .bottomTrailing
         )
         .ignoresSafeArea())
+        .alert("Out of Credits", isPresented: $viewModel.showCreditAlert) {
+            Button("OK", role: .cancel) { }
+            // İleride eklenecek satın alma sayfası için:
+            // Button("Get More Credits") {
+            //     // Navigate to purchase page
+            // }
+        } message: {
+            Text("You don't have enough credits to generate music. Please purchase more credits to continue.")
+        }
     }
 }
 
@@ -81,6 +93,16 @@ private struct HeaderView: View {
         if viewModel.selectedTab == .prompt {
             PromptView(viewModel: viewModel)
                 .padding(.bottom, 70)
+            
+            // Kalan kredi göstergesi
+            HStack {
+                Image(systemName: "creditcard")
+                    .foregroundColor(.purple)
+                Text("Remaining Credits: \(viewModel.remainingCredits)")
+                    .foregroundColor(.gray)
+            }
+            .padding(.top, 10)
+            
         } else {
             ComposeView(viewModel: viewModel)
                 .padding(.bottom, 70)

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 class MusicGeneratorViewModel: ObservableObject {
     @Published var musicPrompt = MusicPrompt()
@@ -13,6 +14,8 @@ class MusicGeneratorViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
     @Published var generatedMusic: [GeneratedMusic] = []
+    @Published var showCreditAlert = false
+    @Published var remainingCredits: Int = 0
     
     enum Tab {
         case prompt, compose
@@ -20,22 +23,28 @@ class MusicGeneratorViewModel: ObservableObject {
     
     private let service = MusicGenerationService.shared
     private let mainViewModel: MainViewModel
+    private let creditManager = CreditStateManager.shared
+    private let userService = UserService.shared
+    private var cancellables = Set<AnyCancellable>()
     
     init(mainViewModel: MainViewModel) {
         self.mainViewModel = mainViewModel
+        creditManager.$currentCredits
+            .assign(to: \.remainingCredits, on: self)
+            .store(in: &cancellables)
     }
     
     // Compose View için müzik üretme
     func generateMusicFromCompose() {
-        print("🎵 Generating music from Compose View")
-        print("📝 Lyrics: \(musicPrompt.lyrics)")
-        print("🎨 Style: \(musicPrompt.style)")
-        print("📌 Title: \(musicPrompt.title)")
-        print("🎼 Instrumental: \(musicPrompt.instrumental)")
-        
         guard validateComposeInput() else {
             print("❌ Validation failed for Compose View")
             return 
+        }
+        
+        // Kredi kontrolü
+        guard userService.updateCredits(-1) else {
+            showCreditAlert = true
+            return
         }
         
         print("✅ Validation passed for Compose View")
@@ -50,12 +59,14 @@ class MusicGeneratorViewModel: ObservableObject {
     
     // Prompt View için müzik üretme
     func generateMusicFromPrompt() {
-        print("🎵 Generating music from Prompt View")
-        print("📝 Prompt: \(musicPrompt.prompt)")
-        print("🎼 Instrumental: \(musicPrompt.instrumental)")
-        
         guard validatePromptInput() else {
             print("❌ Validation failed for Prompt View")
+            return
+        }
+        
+        // Kredi kontrolü
+        guard userService.updateCredits(-1) else {
+            showCreditAlert = true
             return
         }
         
@@ -275,5 +286,9 @@ class MusicGeneratorViewModel: ObservableObject {
         
         // Core Data'ya kaydet
         CoreDataManager.shared.saveSong(music)
+    }
+    
+    func useCredit() {
+        creditManager.updateCredits(-1)
     }
 }

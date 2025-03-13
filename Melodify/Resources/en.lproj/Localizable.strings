@@ -1,0 +1,57 @@
+// Common
+"settings" = "Settings";
+"cancel" = "Cancel";
+"done" = "Done";
+
+
+
+
+// Main
+"main_title" = "Melodify";
+"main_welcome" = "Welcome to Melodify";
+"main_description" = "Transform your lyrics into melodies";
+"main_get_started" = "Get Started";
+"main_create_song" = "Create Song";
+"main_recent_songs" = "Recent Songs";
+"main_no_songs" = "No songs yet";
+"main_no_songs_description" = "Your created songs will appear here";
+"main_subscription_free" = "Free";
+"main_subscription_premium" = "Premium";
+"main_credits_remaining" = "%d credits remaining";
+"main_credits_avaiable" = "Credits Available";
+"main_good_morning" = "Good Morning";
+"main_good_afternoon" = "Good Afternoon";
+"main_good_evening" = "Good Evening";
+"main_hello" = "Hello";
+"main_subHeadline" = "Let's see what can I do for you?";
+
+
+// Tab Bar
+"tab_home" = "Home";
+"tab_library" = "Library";
+"tab_settings" = "Settings";
+
+//Library
+"library_title" = "Library";
+"library_songs" = "Songs";
+"library_favorites" = "Favorites";
+"library_empty_state" = "No songs in your library";
+"library_empty_description" = "Start creating songs to fill your library";
+
+// Settings
+"settings_notifications" = "Notifications";
+"settings_notifications_description" = "Enable push notifications";
+"settings_language" = "Language";
+"settings_terms" = "Terms of Service";
+"settings_privacy" = "Privacy Policy";
+"settings_rate_us" = "Rate Us";
+"settings_rate_us_description" = "Love using Melodify? Let us know!";
+"settings_contact" = "Contact Us";
+"settings_contact_description" = "Have questions or feedback?";
+"settings_share" = "Share App";
+"settings_share_description" = "Share Melodify with friends";
+"settings_clear_data" = "Clear My Data";
+"settings_clear_data_description" = "Permanently delete all your songs";
+"settings_credits" = "Available Credits";
+"settings_credits_description" = "%d credits remaining (%@)";
+"settings_choose_language" = "Choose Language";

@@ -7,8 +7,7 @@ struct HomeNavigationBar: View {
         HStack(spacing: 20) {
             CreditDisplay(viewModel: viewModel)
             Spacer()
-            NotificationButton()
+            NotificationButton(viewModel: viewModel)
         }
-
     }
 } 

@@ -31,7 +31,11 @@ struct MusicPlayerView: View {
                 // Main Content
                 VStack(spacing: 0) {
                     // Header with drag indicator
-                    PlayerHeader(dismiss: dismiss, showLyrics: $showLyrics)
+                    PlayerHeader(
+                        dismiss: dismiss,
+                        showLyrics: $showLyrics,
+                        song: song
+                    )
                     
                     if showLyrics {
                         // Lyrics View
@@ -83,6 +87,8 @@ struct MusicPlayerView: View {
 struct PlayerHeader: View {
     let dismiss: DismissAction
     @Binding var showLyrics: Bool
+    let song: Song
+    @State private var showShareSheet = false
     
     var body: some View {
         VStack {
@@ -122,15 +128,18 @@ struct PlayerHeader: View {
                 Spacer()
                 
                 Button {
-                    // Options menu
+                    showShareSheet = true
                 } label: {
-                    Image(systemName: "ellipsis")
+                    Image(systemName: "square.and.arrow.up")
                         .font(.system(size: 20))
                         .foregroundColor(.white)
                 }
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheet(items: ["Check out this awesome song I found on Melodify!\n\n🎵 \(song.title)"])
         }
     }
 }

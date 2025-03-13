@@ -1,11 +1,13 @@
 import SwiftUI
 
 struct NotificationButton: View {
+    @ObservedObject var viewModel: HomeViewModel
+    
     var body: some View {
         Button {
-            // Bildirimler açılacak
+            viewModel.togglePremium()
         } label: {
-            Image(systemName: "bell") // Sistem ikonuna geri dönüyoruz
+            Image(systemName: viewModel.subscriptionType == .premium ? "bell.fill" : "bell")
                 .font(.system(size: 20, weight: .medium))
                 .foregroundStyle(.white)
                 .frame(width: 44, height: 44)

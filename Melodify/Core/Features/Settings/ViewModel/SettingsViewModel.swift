@@ -1,72 +1,95 @@
 import SwiftUI
+import Combine
 
 class SettingsViewModel: ObservableObject {
-    @Published var sections: [SettingsSection]
-    @Published var notificationsEnabled: Bool = true
-    @Published var quality: Double = 0.8
-    @Published var selectedLanguage: Int = 0 {
+    @Published var sections: [SettingsSection] = []
+    @Published var notificationsEnabled: Bool = UserDefaults.standard.bool(forKey: "notifications_enabled") {
         didSet {
-            updateLanguageDescription()
+            UserDefaults.standard.set(notificationsEnabled, forKey: "notifications_enabled")
         }
     }
+    @Published var quality: Double = 0.8
     @Published var showConfirmation = false
+    @Published var showLanguagePicker = false
     
-    private let languages = ["English", "Türkçe"]
+    let languages = Language.supportedLanguages
+    @Published var selectedLanguage: Language
+    private let creditManager = CreditStateManager.shared
+    private var cancellables = Set<AnyCancellable>()
     
     init() {
-        self.sections = []
+        // Mevcut dili yükle veya varsayılan olarak English kullan
+        if let savedCode = UserDefaults.standard.string(forKey: "app_language"),
+           let savedLanguage = Language.supportedLanguages.first(where: { $0.code == savedCode }) {
+            self.selectedLanguage = savedLanguage
+        } else {
+            self.selectedLanguage = Language.supportedLanguages[0] // English
+        }
+        
+        // İlk kurulum
         setupSections()
+        
+        // Hem kredi hem de subscription değişikliklerini dinle
+        Publishers.CombineLatest(
+            creditManager.$currentCredits,
+            creditManager.$currentSubscription
+        )
+        .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
+        .sink { [weak self] _, _ in
+            DispatchQueue.main.async {
+                self?.setupSections()
+            }
+        }
+        .store(in: &cancellables)
     }
     
     private func setupSections() {
         self.sections = [
-            SettingsSection(title: "Audio", items: [
-                SettingsItem(
-                    icon: "waveform",
-                    iconColor: .blue,
-                    title: "Quality",
-                    description: "Adjust audio quality",
-                    type: .slider(0.8, 0.0...1.0)
-                ),
+            SettingsSection(title: "Notification".localized, items: [
                 SettingsItem(
                     icon: "bell.fill",
                     iconColor: .red,
-                    title: "Notifications",
-                    description: "Enable push notifications",
-                    type: .toggle(true)
+                    title: "settings_notifications".localized,
+                    description: "settings_notifications_description".localized,
+                    type: .toggle(isOn: Binding(
+                        get: { self.notificationsEnabled },
+                        set: { self.notificationsEnabled = $0 }
+                    ))
                 )
             ]),
             
-            SettingsSection(title: "General", items: [
+            SettingsSection(title: "General".localized, items: [
                 SettingsItem(
                     icon: "globe",
                     iconColor: .green,
-                    title: "Language",
-                    description: languages[selectedLanguage],
-                    type: .navigation
+                    title: "settings_language".localized,
+                    description: "\(selectedLanguage.flag) \(selectedLanguage.nativeName)",
+                    type: .picker { [weak self] in
+                        self?.showLanguagePicker = true
+                    }
                 ),
                 SettingsItem(
                     icon: "doc.text.fill",
                     iconColor: .orange,
-                    title: "Terms of Service",
+                    title: "settings_terms".localized,
                     description: nil,
                     type: .navigation
                 ),
                 SettingsItem(
                     icon: "lock.fill",
                     iconColor: .gray,
-                    title: "Privacy Policy",
+                    title: "settings_privacy".localized,
                     description: nil,
                     type: .navigation
                 )
             ]),
             
-            SettingsSection(title: "Support", items: [
+            SettingsSection(title: "Support".localized, items: [
                 SettingsItem(
                     icon: "star.fill",
                     iconColor: .yellow,
-                    title: "Rate Us",
-                    description: "Love using Melodify? Let us know!",
+                    title: "settings_rate_us".localized,
+                    description: "settings_rate_us_description".localized,
                     type: .button({ 
                         if let url = URL(string: "itms-apps://apple.com/app/id123456789") {
                             UIApplication.shared.open(url)
@@ -76,8 +99,8 @@ class SettingsViewModel: ObservableObject {
                 SettingsItem(
                     icon: "envelope.fill",
                     iconColor: .blue,
-                    title: "Contact Us",
-                    description: "Have questions or feedback?",
+                    title: "settings_contact".localized,
+                    description: "settings_contact_description".localized,
                     type: .button({
                         if let url = URL(string: "mailto:support@melodify.app") {
                             UIApplication.shared.open(url)
@@ -87,14 +110,15 @@ class SettingsViewModel: ObservableObject {
                 SettingsItem(
                     icon: "square.and.arrow.up",
                     iconColor: .green,
-                    title: "Share App",
-                    description: "Share Melodify with friends",
+                    title: "settings_share".localized,
+                    description: "settings_share_description".localized,
                     type: .button({
                         // Share işlemi burada yapılacak
                     })
                 )
             ]),
             
+            /*
             SettingsSection(title: "Account", items: [
                 SettingsItem(
                     icon: "person.fill",
@@ -111,53 +135,54 @@ class SettingsViewModel: ObservableObject {
                     type: .button({ print("Sign out tapped") })
                 )
             ]),
-            
+            */
             // Data Management section'ını ekle
-            SettingsSection(title: "Data Management", items: [
+            SettingsSection(title: "Data Management".localized, items: [
                 SettingsItem(
                     icon: "trash",
                     iconColor: .red,
-                    title: "Clear My Data",
-                    description: "Permanently delete all your songs",
+                    title: "settings_clear_data".localized,
+                    description: "settings_clear_data_description".localized,
                     type: .button({ [weak self] in
                         self?.showConfirmation = true
                     })
                 )
+            ]),
+            
+            SettingsSection(title: "Credits".localized, items: [
+                SettingsItem(
+                    icon: "creditcard",
+                    iconColor: .purple,
+                    title: "settings_credits".localized,
+                    description: String(format: "settings_credits_description".localized, 
+                                      creditManager.currentCredits, 
+                                      creditManager.currentSubscription.rawValue),
+                    type: .info
+                )
             ])
         ]
-    }
-    
-    private func updateLanguageDescription() {
-        // Sections içindeki Language item'ını bul ve güncelle
-        if let sectionIndex = sections.firstIndex(where: { section in
-            section.items.contains(where: { $0.title == "Language" })
-        }) {
-            // Önce mevcut section'ı al
-            var updatedSection = sections[sectionIndex]
-            
-            // Section içindeki language item'ını bul
-            if let itemIndex = updatedSection.items.firstIndex(where: { $0.title == "Language" }) {
-                // Yeni item oluştur
-                let updatedItem = SettingsItem(
-                    icon: "globe",
-                    iconColor: .green,
-                    title: "Language",
-                    description: languages[selectedLanguage],
-                    type: .navigation
-                )
-                
-                // Section'ın items array'ini güncelle
-                updatedSection.items[itemIndex] = updatedItem
-                
-                // Ana sections array'ini güncelle
-                sections[sectionIndex] = updatedSection
-            }
-        }
     }
     
     func clearAllData() {
         CoreDataManager.shared.clearAllData()
         // Bildirimi gönder
         NotificationCenter.default.post(name: .songsDidUpdate, object: nil)
+    }
+    
+    func updateLanguage(_ language: Language) {
+        selectedLanguage = language
+        
+        // Bundle'ı güncelle
+        Bundle.setLanguage(language.code)
+        
+        // UserDefaults'a kaydet
+        UserDefaults.standard.set(language.code, forKey: "app_language")
+        UserDefaults.standard.synchronize()
+        
+        // Tüm view'ları yeniden yükle
+        DispatchQueue.main.async { [weak self] in
+            self?.setupSections()
+            NotificationCenter.default.post(name: .languageDidChange, object: nil)
+        }
     }
 } 

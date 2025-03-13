@@ -6,7 +6,7 @@ struct CreditDisplay: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             
-            Text("Credits Available")
+            Text("main_credits_avaiable".localized)
                 .font(.system(size: 8, weight: .medium))
                 .foregroundStyle(.gray)
             

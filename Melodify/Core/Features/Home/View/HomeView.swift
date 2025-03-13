@@ -53,7 +53,7 @@ private struct GreetingTextView: View {
                 Spacer()
             }
             
-            Text(viewModel.subHeadline)
+            Text(viewModel.subHeadline.localized)
                 .font(.system(size: 20, weight: .bold))
                 .foregroundColor(.white)
         }

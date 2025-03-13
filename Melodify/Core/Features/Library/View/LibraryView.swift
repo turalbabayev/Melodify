@@ -32,7 +32,7 @@ struct LibraryView: View {
                 VStack(spacing: 0) {
                     // Modern Header
                     HStack(alignment: .lastTextBaseline) {
-                        Text("Library")
+                        Text("library_title".localized)
                             .font(.system(size: 34, weight: .bold))
                             .foregroundColor(.white)
                         
@@ -500,8 +500,8 @@ enum LibraryTab: String, CaseIterable {
     
     var title: String {
         switch self {
-        case .songs: return "Songs"
-        case .favorites: return "Favorites"
+        case .songs: return "library_songs".localized
+        case .favorites: return "library_favorites".localized
         }
     }
     

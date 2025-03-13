@@ -1,10 +1,11 @@
 import Foundation
 import SwiftUI
+import Combine
 
 class HomeViewModel: ObservableObject {
     @Published var credits: Int = 0
     @Published var userName: String = "Tural"
-    @Published var subscriptionType: SubscriptionType = .premium
+    @Published var subscriptionType: SubscriptionType = .free
     
     // Yeni şablon verileri
     @Published var templates: [TemplateCardModel] = [
@@ -19,22 +20,49 @@ class HomeViewModel: ObservableObject {
     ]
     
     private let userService = UserService.shared
+    private let creditManager = CreditStateManager.shared
+    private var cancellables = Set<AnyCancellable>()
     
     init() {
         setupUser()
+        setupNotifications()
+        
+        // CreditStateManager'dan değişiklikleri dinle
+        creditManager.$currentCredits
+            .assign(to: \.credits, on: self)
+            .store(in: &cancellables)
+            
+        creditManager.$currentSubscription
+            .assign(to: \.subscriptionType, on: self)
+            .store(in: &cancellables)
     }
     
     private func setupUser() {
         userService.initializeUserIfNeeded()
-        userService.checkAndUpdateMonthlyCredits()
+        updateUserInfo()
+    }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleCreditsUpdate),
+            name: .creditsDidUpdate,
+            object: nil
+        )
+    }
+    
+    @objc private func handleCreditsUpdate() {
         updateUserInfo()
     }
     
     private func updateUserInfo() {
         if let user = userService.currentUser {
-            credits = user.credits
-            subscriptionType = user.subscription
+            userName = user.name
         }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func useCredits(_ amount: Int) -> Bool {
@@ -56,13 +84,13 @@ class HomeViewModel: ObservableObject {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
         case 6..<12:
-            return "Good Morning"
+            return "main_good_morning".localized
         case 12..<18:
-            return "Good Afternoon"
+            return "main_good_afternoon".localized
         case 18..<23:
-            return "Good Evening"
+            return "main_good_evening".localized
         default:
-            return "Hello" // Gece 23'ten sonra "Hello" diyebiliriz
+            return "main_hello".localized // Gece 23'ten sonra "Hello" diyebiliriz
         }
     }
     
@@ -74,6 +102,12 @@ class HomeViewModel: ObservableObject {
     // View'da ikinci satırda kullandığın "Let's see what can I do for you?"
     // gibi sabit metinleri de buraya koyabilirsin:
     var subHeadline: String {
-        return "Let's see what can I do for you?"
+        return "main_subHeadline".localized
+        
+    }
+    
+    func togglePremium() {
+        let newType: SubscriptionType = subscriptionType == .free ? .premium : .free
+        creditManager.updateSubscription(newType)
     }
 }

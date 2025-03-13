@@ -11,6 +11,20 @@ import SwiftUI
 struct MelodifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+    init() {
+        UserDefaults.setupInitialCredits()
+        UserService.shared.checkAndUpdateMonthlyCredits()
+        
+        // Kaydedilmiş dili yükle
+        if let languageCode = UserDefaults.standard.string(forKey: "app_language") {
+            Bundle.setLanguage(languageCode)
+        } else {
+            // Varsayılan dil
+            Bundle.setLanguage("en")
+            UserDefaults.standard.set("en", forKey: "app_language")
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             //MainView()
