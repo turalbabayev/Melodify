@@ -1,6 +1,6 @@
 import Foundation
 
-struct Song: Identifiable {
+struct Song: Identifiable,Codable {
     let id: String
     let title: String
     let duration: TimeInterval

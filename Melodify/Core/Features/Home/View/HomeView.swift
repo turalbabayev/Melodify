@@ -1,22 +1,5 @@
 import SwiftUI
 
-/*
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        var chunks: [[Element]] = []
-        var index = 0
-        
-        while index < count {
-            let chunk = Array(self[index..<Swift.min(index + size, count)])
-            chunks.append(chunk)
-            index += size
-        }
-        
-        return chunks
-    }
-}
- */
-
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @ObservedObject var mainViewModel: MainViewModel
@@ -40,7 +23,17 @@ struct HomeView: View {
                 }
                 .padding(.bottom, 48)
             }
-            .background(AppColors.cardBackground)
+            .background(LinearGradient(
+                colors: [
+                    Color.black,
+                    Color.purple.opacity(0.3),
+                    //Color.blue.opacity(0.2),
+                    Color.black
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea())
         }
     }
     

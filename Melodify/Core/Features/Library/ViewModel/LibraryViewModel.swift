@@ -5,6 +5,7 @@ class LibraryViewModel: ObservableObject {
     @Published var songs: [Song] = []
     private var mainViewModel: MainViewModel
     private var cancellable: AnyCancellable?
+    private let coreDataManager = CoreDataManager.shared
     
     init(mainViewModel: MainViewModel) {
         self.mainViewModel = mainViewModel
@@ -17,6 +18,25 @@ class LibraryViewModel: ObservableObject {
             .sink { [weak self] songs in
                 self?.handleNewSongs(songs)
             }
+        
+        setupNotifications()
+    }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleSongsUpdate),
+            name: .songsDidUpdate,
+            object: nil
+        )
+    }
+    
+    @objc private func handleSongsUpdate() {
+        loadSongs()
+    }
+    
+    private func loadSongs() {
+        songs = coreDataManager.loadSongs()
     }
     
     private func loadSavedSongs() {
@@ -28,31 +48,33 @@ class LibraryViewModel: ObservableObject {
     }
     
     private func handleNewSongs(_ generatedSongs: [GeneratedMusic]) {
-        // Sadece SUCCESS durumundaki şarkıları kaydet
-        for song in generatedSongs {
-            if song.status == .SUCCESS {
-                CoreDataManager.shared.saveSong(song)
-            }
-        }
-        
-        // Tüm şarkıları göster
-        let allSongs = generatedSongs.map(convertToSong)
-        
         DispatchQueue.main.async {
-            // Mevcut şarkıları koruyarak yeni şarkıları ekle
+            // 1. Önce mevcut generating durumundaki geçici rowları kaldır
+            self.songs.removeAll { $0.isGenerating }
+            
+            // 2. Yeni gelen şarkıları dönüştür
+            let newSongs = generatedSongs.map { generatedMusic -> Song in
+                // Eğer şarkı başarıyla üretildiyse kaydet
+                if generatedMusic.status == .SUCCESS {
+                    CoreDataManager.shared.saveSong(generatedMusic)
+                }
+                
+                return self.convertToSong(generatedMusic)
+            }
+            
+            // 3. Yeni şarkıları ekle (duplicate'leri önle)
             let existingIds = Set(self.songs.map { $0.id })
-            let newSongs = allSongs.filter { !existingIds.contains($0.id) }
-            self.songs.append(contentsOf: newSongs)
+            let uniqueNewSongs = newSongs.filter { !existingIds.contains($0.id) }
+            self.songs.append(contentsOf: uniqueNewSongs)
         }
     }
     
-    // GeneratedMusic'i Song modeline dönüştür
     private func convertToSong(_ generatedMusic: GeneratedMusic) -> Song {
         return Song(
             id: generatedMusic.id,
             title: generatedMusic.title,
             duration: generatedMusic.duration ?? 0,
-            url: URL(string: generatedMusic.streamAudioUrl),
+            url: URL(string: generatedMusic.audioUrl),
             imageUrl: URL(string: generatedMusic.imageUrl),
             isFavorite: false,
             lyrics: [],
@@ -89,5 +111,9 @@ class LibraryViewModel: ObservableObject {
                 playlists = decoded
             }
         }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 } 

@@ -3,9 +3,14 @@ import SwiftUI
 struct MusicPlayerView: View {
     let song: Song
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel = MusicPlayerViewModel.shared // shared instance kullanıyoruz
+    @ObservedObject var viewModel: MusicPlayerViewModel
     @State private var dragOffset: CGFloat = 0
     @State private var showLyrics = false
+    
+    init(song: Song) {
+        self.song = song
+        self.viewModel = MusicPlayerViewModel.shared
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -46,52 +51,31 @@ struct MusicPlayerView: View {
         .presentationDetents([.large])
         .presentationBackground(.ultraThinMaterial)
         .interactiveDismissDisabled()
-        .gesture(DragGesture()
-            .onChanged { gesture in
-                let translation = gesture.translation.height
-                let progress = min(max(0, translation / UIScreen.main.bounds.height), 1)
-                dragOffset = translation * pow(progress, 0.5)
-            }
-            .onEnded { gesture in
-                let translation = gesture.translation.height
-                let velocity = gesture.velocity.height
-                
-                if translation > 150 || velocity > 1500 {
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        dragOffset = UIScreen.main.bounds.height
-                    }
-                    // Sadece view'ı kapatıyoruz, müziği durdurmuyoruz
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        dismiss()
-                    }
-                } else {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        dragOffset = 0
+        .gesture(
+            DragGesture()
+                .onChanged { gesture in
+                    let translation = gesture.translation.height
+                    let progress = min(max(0, translation / UIScreen.main.bounds.height), 1)
+                    dragOffset = translation * pow(progress, 0.5)
+                }
+                .onEnded { gesture in
+                    let translation = gesture.translation.height
+                    let velocity = gesture.velocity.height
+                    
+                    if translation > 50 || velocity > 1000 {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            dragOffset = UIScreen.main.bounds.height
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            dismiss()
+                        }
+                    } else {
+                        withAnimation(.spring()) {
+                            dragOffset = 0
+                        }
                     }
                 }
-            }
         )
-        .onDisappear {
-            // View kapanırken müziği durdurma
-            // viewModel.isPlaying durumunu koruyoruz
-        }
-    }
-    
-    private var defaultCoverView: some View {
-        RoundedRectangle(cornerRadius: 20)
-            .fill(
-                LinearGradient(
-                    colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .frame(width: 300, height: 300)
-            .overlay(
-                Image(systemName: "music.note")
-                    .font(.system(size: 60))
-                    .foregroundColor(.white.opacity(0.8))
-            )
     }
 }
 
@@ -198,27 +182,54 @@ struct PlayerContent: View {
     let song: Song
     @ObservedObject var viewModel: MusicPlayerViewModel
     
+    var defaultCoverView: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(
+                LinearGradient(
+                    colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .frame(width: 300, height: 300)
+            .overlay(
+                Image(systemName: "music.note")
+                    .font(.system(size: 60))
+                    .foregroundColor(.white.opacity(0.8))
+            )
+            .shadow(color: .purple.opacity(0.3), radius: 20)
+    }
+    
     var body: some View {
         // Album Art
         ZStack {
-            RoundedRectangle(cornerRadius: 30)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            .purple.opacity(0.5),
-                            .blue.opacity(0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(height: UIScreen.main.bounds.width - 80)
-                .overlay(
-                    Image(systemName: "music.note")
-                        .font(.system(size: 60))
-                        .foregroundColor(.white.opacity(0.8))
-                )
-                .shadow(color: .purple.opacity(0.3), radius: 20)
+            if let imageUrl = song.imageUrl {
+                AsyncImage(url: imageUrl) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 300, height: 300)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                } placeholder: {
+                    // Yükleme sırasında gösterilecek placeholder
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(
+                            LinearGradient(
+                                colors: [.purple.opacity(0.5), .blue.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 300, height: 300)
+                        .overlay(
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        )
+                }
+            } else {
+                // Resim URL'si yoksa varsayılan görünüm
+                defaultCoverView
+            }
         }
         .padding(.horizontal, 40)
         .padding(.top, 40)

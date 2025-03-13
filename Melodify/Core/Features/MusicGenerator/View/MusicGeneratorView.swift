@@ -24,7 +24,17 @@ struct MusicGeneratorView: View {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
-        .background(AppColors.cardBackground)
+        .background(LinearGradient(
+            colors: [
+                Color.black,
+                Color.purple.opacity(0.3),
+                //Color.blue.opacity(0.2),
+                Color.black
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea())
     }
 }
 

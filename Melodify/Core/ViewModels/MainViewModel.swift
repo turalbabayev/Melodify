@@ -14,6 +14,10 @@ class MainViewModel: ObservableObject {
         selectedTab = .library
     }
     
+    func navigateToCreate() {
+        selectedTab = .create
+    }
+    
     func addGeneratedSongs(_ songs: [GeneratedMusic]) {
         generatedSongs = songs + generatedSongs
     }

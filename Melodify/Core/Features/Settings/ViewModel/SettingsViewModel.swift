@@ -9,6 +9,7 @@ class SettingsViewModel: ObservableObject {
             updateLanguageDescription()
         }
     }
+    @Published var showConfirmation = false
     
     private let languages = ["English", "Türkçe"]
     
@@ -109,6 +110,19 @@ class SettingsViewModel: ObservableObject {
                     description: nil,
                     type: .button({ print("Sign out tapped") })
                 )
+            ]),
+            
+            // Data Management section'ını ekle
+            SettingsSection(title: "Data Management", items: [
+                SettingsItem(
+                    icon: "trash",
+                    iconColor: .red,
+                    title: "Clear My Data",
+                    description: "Permanently delete all your songs",
+                    type: .button({ [weak self] in
+                        self?.showConfirmation = true
+                    })
+                )
             ])
         ]
     }
@@ -139,5 +153,11 @@ class SettingsViewModel: ObservableObject {
                 sections[sectionIndex] = updatedSection
             }
         }
+    }
+    
+    func clearAllData() {
+        CoreDataManager.shared.clearAllData()
+        // Bildirimi gönder
+        NotificationCenter.default.post(name: .songsDidUpdate, object: nil)
     }
 } 

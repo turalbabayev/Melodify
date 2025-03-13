@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryView: View {
     @StateObject private var viewModel: LibraryViewModel
     @ObservedObject var mainViewModel: MainViewModel
+    @State private var showMusicGenerator = false
     
     init(mainViewModel: MainViewModel) {
         _viewModel = StateObject(wrappedValue: LibraryViewModel(mainViewModel: mainViewModel))
@@ -12,6 +13,7 @@ struct LibraryView: View {
     @State private var selectedTab: LibraryTab = .songs
     
     var body: some View {
+        
         NavigationStack {
             ZStack {
                 // Animated Gradient Background
@@ -75,21 +77,80 @@ struct LibraryView: View {
                     .padding(.horizontal, 20)
                     
                     // Content
-                    TabView(selection: $selectedTab) {
-                        SongsTab(viewModel: viewModel)
-                            .tag(LibraryTab.songs)
-                        
-                        PlaylistsTab(viewModel: viewModel)
-                            .tag(LibraryTab.playlists)
-                        
-                        FavoritesTab(viewModel: viewModel)
-                            .tag(LibraryTab.favorites)
+                    
+                    ScrollView {
+                        switch selectedTab {
+                        case .songs:
+                            if viewModel.songs.isEmpty {
+                                emptyStateView(
+                                    image: "music.note",
+                                    title: "Henüz Şarkı Yok",
+                                    message: "Yeni bir şarkı oluşturmak için tıklayın",
+                                    buttonAction: { showMusicGenerator = true }
+                                )
+                            } else {
+                                SongsTab(viewModel: viewModel)
+                            }
+                            
+                        case .favorites:
+                            if viewModel.favoriteSongs.isEmpty {
+                                emptyStateView(
+                                    image: "heart",
+                                    title: "Favori Şarkı Yok",
+                                    message: "Favori şarkılarınız burada görünecek",
+                                    buttonAction: { selectedTab = .songs }
+                                )
+                            } else {
+                                FavoritesTab(viewModel: viewModel)
+                            }
+                            
+                        }
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                    .padding(.top, 20)
                 }
             }
         }
+        
+    }
+    
+    @ViewBuilder
+    private func emptyStateView(image: String, title: String, message: String, buttonAction: @escaping () -> Void) -> some View {
+        VStack(spacing: 24) {
+            Spacer()
+            
+            // İkon
+            Image(systemName: image)
+                .font(.system(size: 70))
+                .foregroundColor(.purple.opacity(0.7))
+            
+            VStack(spacing: 12) {
+                Text(title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text(message)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            // Aksiyon butonu
+            Button(action: buttonAction) {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Create")
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color.purple)
+                .cornerRadius(25)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -108,6 +169,7 @@ struct SongsTab: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 100)
+            .padding(.top, 16)
         }
     }
 }
@@ -124,7 +186,6 @@ struct ModernSongRow: View {
             Button {
                 if !song.isGenerating && song.url != nil {
                     showPlayer = true
-                    // Şarkıyı arka planda yüklemeye başla
                     Task {
                         await playWithDelay()
                     }
@@ -148,7 +209,7 @@ struct ModernSongRow: View {
                                         )
                                     )
                             }
-                            .frame(width: 55, height: 55)
+                            .frame(width: 50, height: 50 )
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         } else {
                             RoundedRectangle(cornerRadius: 12)
@@ -179,7 +240,7 @@ struct ModernSongRow: View {
                     // Song Info
                     VStack(alignment: .leading, spacing: 4) {
                         Text(song.title)
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white)
                         
                         if song.isGenerating {
@@ -214,12 +275,30 @@ struct ModernSongRow: View {
             
             Spacer()
             
-            // Favorite Button - sadece şarkı hazırsa göster
+            
+            
+            // Favorite Button
             if !song.isGenerating && song.url != nil {
                 Button(action: onFavoriteToggle) {
                     Image(systemName: song.isFavorite ? "heart.fill" : "heart")
-                        .font(.system(size: 22))
+                        .font(.system(size: 20))
                         .foregroundColor(song.isFavorite ? .purple : .gray)
+                }
+            }
+            
+            // Play Button - sadece şarkı hazırsa göster
+            if !song.isGenerating && song.url != nil {
+                Button {
+                    Task {
+                        await playWithDelay()
+                    }
+                } label: {
+                    Image(systemName: playerViewModel.isPlaying && playerViewModel.currentSong?.id == song.id ? "pause.fill" : "play.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.purple)
+                        .frame(width: 44, height: 44)
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(Circle())
                 }
             }
         }
@@ -297,6 +376,7 @@ struct FavoritesTab: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 100)
+            .padding(.top, 16)
         }
     }
 }
@@ -416,12 +496,11 @@ struct LibraryPlaylistCard: View {
 
 // MARK: - Library Tab Enum
 enum LibraryTab: String, CaseIterable {
-    case songs, playlists, favorites
+    case songs, favorites
     
     var title: String {
         switch self {
         case .songs: return "Songs"
-        case .playlists: return "Playlists"
         case .favorites: return "Favorites"
         }
     }
@@ -429,7 +508,6 @@ enum LibraryTab: String, CaseIterable {
     var icon: String {
         switch self {
         case .songs: return "music.note"
-        case .playlists: return "music.note.list"
         case .favorites: return "heart.fill"
         }
     }
