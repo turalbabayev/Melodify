@@ -5,6 +5,11 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showCloseButton = false
     
+    private func handleDismiss() {
+        viewModel.audioPlayer.stop() // Müziği durdur
+        dismiss() // View'ı kapat
+    }
+    
     var body: some View {
         ZStack {
             // Arkaplan gradyanı
@@ -191,6 +196,10 @@ struct PaywallView: View {
                 Button("paywall_privacy".localized) {
                     viewModel.showPrivacy()
                 }
+                
+                Button("paywall_restore".localized) {
+                    viewModel.restorePurchases()
+                }
             }
             .font(.system(size: 12))
             .foregroundColor(.purple)
@@ -202,7 +211,7 @@ struct PaywallView: View {
             HStack {
                 Spacer()
                 Button {
-                    dismiss()
+                    handleDismiss()
                 } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 16, weight: .bold))

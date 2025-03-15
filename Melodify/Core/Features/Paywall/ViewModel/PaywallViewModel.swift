@@ -21,9 +21,24 @@ class PaywallViewModel: ObservableObject {
         )
     ]
     
+    let audioPlayer = PaywallAudioPlayer.shared
+    
     init() {
         // İlk yüklemede varsayılan plan (yıllık) için feature'ları ayarla
         updateFeatures(for: plans[0])
+        playBackgroundMusic()
+    }
+    
+    private func playBackgroundMusic() {
+        if let musicUrl = Bundle.main.url(forResource: "sample-music", withExtension: "mp3") {
+            audioPlayer.setupPlayer(with: musicUrl)
+            audioPlayer.play()
+        }
+    }
+    
+    deinit {
+        // View kapandığında müziği durdur
+        audioPlayer.stop()
     }
     
     func selectPlan(_ selectedPlan: SubscriptionPlan) {
@@ -82,5 +97,10 @@ class PaywallViewModel: ObservableObject {
         if let url = URL(string: "https://melodify.app/privacy") {
             UIApplication.shared.open(url)
         }
+    }
+    
+    func restorePurchases() {
+        // RevenueCat entegrasyonu yapıldığında burada restore işlemi yapılacak
+        print("Restore purchases tapped")
     }
 } 

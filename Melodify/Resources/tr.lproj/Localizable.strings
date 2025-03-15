@@ -68,6 +68,7 @@
 "paywall_month" = "ay";
 "paywall_yearly" = "Yıllık";
 "paywall_monthly" = "Aylık";
+"paywall_restore" = "Satın Alımları Geri Yükle";
 
 // Premium Features
 "paywall_feature_credits_title" = "Daha Fazla Müzik Üretimi";

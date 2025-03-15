@@ -67,6 +67,7 @@
 "paywall_month" = "month";
 "paywall_yearly" = "Yearly";
 "paywall_monthly" = "Monthly";
+"paywall_restore" = "Restore Purchases";
 
 // Premium Features
 "paywall_feature_credits_title" = "More Music Creation";
