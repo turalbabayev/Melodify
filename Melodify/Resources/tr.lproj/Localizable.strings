@@ -70,11 +70,21 @@
 "paywall_monthly" = "Aylık";
 
 // Premium Features
-"paywall_feature_unlimited_title" = "Sınırsız Şarkı";
-"paywall_feature_unlimited_desc" = "İstediğiniz kadar şarkı oluşturun";
+"paywall_feature_credits_title" = "Daha Fazla Müzik Üretimi";
+"paywall_feature_credits_desc" = "Haftalık: 250 kredi (25 şarkı), Yıllık: 3500 kredi (350 şarkı)";
 "paywall_feature_quality_title" = "Yüksek Kalite";
 "paywall_feature_quality_desc" = "Premium kalitede müzik üretimi";
-"paywall_feature_instrumental_title" = "Enstrümantal Mod";
-"paywall_feature_instrumental_desc" = "Şarkılarınızın enstrümantal versiyonlarını oluşturun";
-"paywall_feature_download_title" = "Şarkıları İndir";
-"paywall_feature_download_desc" = "Şarkılarınızı yüksek kalitede indirin";
+"paywall_feature_priority_title" = "Öncelikli Üretim";
+"paywall_feature_priority_desc" = "Müzikleriniz öncelikli olarak üretilir";
+
+"paywall_weekly" = "Haftalık";
+
+// Premium Features - Weekly
+"paywall_feature_credits_weekly" = "Haftalık 250 kredi (25 şarkı)";
+"paywall_feature_quality_weekly" = "Yüksek kalitede müzik üretimi";
+"paywall_feature_priority_weekly" = "Yüksek öncelikli üretim";
+
+// Premium Features - Yearly
+"paywall_feature_credits_yearly" = "Yıllık 3500 kredi (350 şarkı)";
+"paywall_feature_quality_yearly" = "Ultra yüksek kalitede müzik üretimi";
+"paywall_feature_priority_yearly" = "Maksimum öncelikli üretim";

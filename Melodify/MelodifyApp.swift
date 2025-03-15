@@ -10,6 +10,9 @@ import SwiftUI
 @main
 struct MelodifyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @State private var showPaywall = false
+    
+    private let userService = UserService.shared
 
     init() {
         UserDefaults.setupInitialCredits()
@@ -27,9 +30,22 @@ struct MelodifyApp: App {
 
     var body: some Scene {
         WindowGroup {
-            //MainView()
             LaunchScreen()
-            //PaywallView()
+                .sheet(isPresented: $showPaywall) {
+                    PaywallView()
+                }
+                .onAppear {
+                    // LaunchScreen kapandıktan sonra Paywall'ı göster
+                    NotificationCenter.default.addObserver(
+                        forName: .launchScreenDidFinish,
+                        object: nil,
+                        queue: .main
+                    ) { _ in
+                        if userService.currentUser?.subscription == .free {
+                            showPaywall = true
+                        }
+                    }
+                }
         }
     }
 }

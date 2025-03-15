@@ -69,11 +69,26 @@
 "paywall_monthly" = "Monthly";
 
 // Premium Features
-"paywall_feature_unlimited_title" = "Unlimited Songs";
-"paywall_feature_unlimited_desc" = "Create as many songs as you want";
+"paywall_feature_credits_title" = "More Music Creation";
+"paywall_feature_credits_desc" = "Weekly: 250 credits (25 songs), Yearly: 3500 credits (350 songs)";
 "paywall_feature_quality_title" = "High Quality";
 "paywall_feature_quality_desc" = "Access to premium quality music generation";
+"paywall_feature_priority_title" = "Priority Generation";
+"paywall_feature_priority_desc" = "Get your music generated with higher priority";
+"paywall_feature_unlimited_title" = "Unlimited Songs";
+"paywall_feature_unlimited_desc" = "Create as many songs as you want";
 "paywall_feature_instrumental_title" = "Instrumental Mode";
 "paywall_feature_instrumental_desc" = "Create instrumental versions of your songs";
 "paywall_feature_download_title" = "Download Songs";
 "paywall_feature_download_desc" = "Download your songs in high quality";
+"paywall_weekly" = "Weekly";
+
+// Premium Features - Weekly
+"paywall_feature_credits_weekly" = "250 credits (25 songs) per week";
+"paywall_feature_quality_weekly" = "High quality music generation";
+"paywall_feature_priority_weekly" = "High priority in queue";
+
+// Premium Features - Yearly
+"paywall_feature_credits_yearly" = "3500 credits (350 songs) per year";
+"paywall_feature_quality_yearly" = "Ultra high quality music generation";
+"paywall_feature_priority_yearly" = "Maximum priority in queue";

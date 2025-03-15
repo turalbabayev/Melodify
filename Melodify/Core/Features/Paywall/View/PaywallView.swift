@@ -3,6 +3,7 @@ import SwiftUI
 struct PaywallView: View {
     @StateObject private var viewModel = PaywallViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var showCloseButton = false
     
     var body: some View {
         ZStack {
@@ -37,7 +38,17 @@ struct PaywallView: View {
             }
             
             // Close button
-            closeButton
+            if showCloseButton {
+                closeButton
+                    .transition(.opacity)
+            }
+        }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                withAnimation {
+                    showCloseButton = true
+                }
+            }
         }
     }
     
@@ -107,6 +118,10 @@ struct PaywallView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(plan.title.localized)
                                 .font(.system(size: 18, weight: .bold))
+                            
+                            Text("\(plan.credits) " + "credits".localized)
+                                .font(.system(size: 14))
+                                .foregroundColor(.gray)
                             
                             if let savings = plan.savings {
                                 Text("paywall_save".localized + " \(savings)%")

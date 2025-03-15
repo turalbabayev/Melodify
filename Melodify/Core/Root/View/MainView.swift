@@ -2,6 +2,8 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var mainViewModel = MainViewModel()
+    @State private var showPaywall = false
+    private let userService = UserService.shared
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -26,6 +28,15 @@ struct MainView: View {
             CustomTabBar(selectedTab: $mainViewModel.selectedTab)
         }
         .edgesIgnoringSafeArea(.bottom)
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+        .onAppear {
+            // MainView görüntülendiğinde (LaunchScreen'den sonra) Paywall'ı göster
+            if userService.currentUser?.subscription == .free {
+                showPaywall = true
+            }
+        }
     }
 }
 

@@ -12,6 +12,7 @@ struct SubscriptionPlan: Identifiable {
     let title: String
     let price: String
     var pricePerMonth: String? = nil
+    var credits: Int
     var savings: Int? = nil
     var isSelected: Bool
 } 
