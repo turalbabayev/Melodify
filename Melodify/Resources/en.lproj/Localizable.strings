@@ -55,3 +55,25 @@
 "settings_credits" = "Available Credits";
 "settings_credits_description" = "%d credits remaining (%@)";
 "settings_choose_language" = "Choose Language";
+
+// Paywall
+"paywall_unlock_premium" = "Unlock Premium Features";
+"paywall_description" = "Get unlimited access to all features and create unlimited songs";
+"paywall_start_premium" = "Start Premium";
+"paywall_terms" = "Terms of Use";
+"paywall_privacy" = "Privacy Policy";
+"paywall_terms_description" = "By continuing, you agree to our Terms of Use and Privacy Policy. Subscription auto-renews unless canceled.";
+"paywall_save" = "Save";
+"paywall_month" = "month";
+"paywall_yearly" = "Yearly";
+"paywall_monthly" = "Monthly";
+
+// Premium Features
+"paywall_feature_unlimited_title" = "Unlimited Songs";
+"paywall_feature_unlimited_desc" = "Create as many songs as you want";
+"paywall_feature_quality_title" = "High Quality";
+"paywall_feature_quality_desc" = "Access to premium quality music generation";
+"paywall_feature_instrumental_title" = "Instrumental Mode";
+"paywall_feature_instrumental_desc" = "Create instrumental versions of your songs";
+"paywall_feature_download_title" = "Download Songs";
+"paywall_feature_download_desc" = "Download your songs in high quality";

@@ -12,7 +12,7 @@ struct HomeView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
                     
-                    GreetingTextView()
+                    GreetingTextView(viewModel: viewModel)
                     
                     FeatureCardView()
                     
@@ -41,19 +41,19 @@ struct HomeView: View {
 }
 
 private struct GreetingTextView: View {
-    @StateObject private var viewModel = HomeViewModel()
+    @ObservedObject var viewModel: HomeViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("\(viewModel.greetingMessage)! \(viewModel.userName) \(viewModel.greetingEmoji)")
+                Text("\(viewModel.greetingText)! \(viewModel.userName) 👋")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.white.opacity(0.5))
                 
                 Spacer()
             }
             
-            Text(viewModel.subHeadline.localized)
+            Text(viewModel.subHeadlineText)
                 .font(.system(size: 20, weight: .bold))
                 .foregroundColor(.white)
         }
@@ -120,7 +120,7 @@ private struct SectionFooterView: View {
         HStack(alignment: .top, spacing: 10) {
             VStack {
                 ForEach(viewModel.templates.prefix(viewModel.templates.count / 2), id: \.self) { template in
-                    NavigationLink(destination: SearchView()) {
+                    NavigationLink(destination: PaywallView()) {
                         Image(template.imageName)
                             .resizable()
                             .scaledToFill()
@@ -132,7 +132,7 @@ private struct SectionFooterView: View {
             }
             VStack {
                 ForEach(viewModel.templates.suffix(viewModel.templates.count / 2), id: \.self) { template in
-                    NavigationLink(destination: SearchView()) {
+                    NavigationLink(destination: PaywallView()) {
                         Image(template.imageName)
                             .resizable()
                             .scaledToFill()

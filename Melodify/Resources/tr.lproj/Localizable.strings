@@ -56,3 +56,25 @@
 "library_favorites" = "Favorilerim";
 "library_empty_state" = "Kitaplığınızda şarkı yok";
 "library_empty_description" = "Kitaplığınızı doldurmak için şarkı oluşturmaya başlayın";
+
+// Paywall
+"paywall_unlock_premium" = "Premium Özellikleri Aç";
+"paywall_description" = "Tüm özelliklere sınırsız erişim ve sınırsız şarkı oluşturma";
+"paywall_start_premium" = "Premium'a Başla";
+"paywall_terms" = "Kullanım Koşulları";
+"paywall_privacy" = "Gizlilik Politikası";
+"paywall_terms_description" = "Devam ederek, Kullanım Koşullarımızı ve Gizlilik Politikamızı kabul etmiş olursunuz. Abonelik iptal edilmediği sürece otomatik olarak yenilenir.";
+"paywall_save" = "Tasarruf";
+"paywall_month" = "ay";
+"paywall_yearly" = "Yıllık";
+"paywall_monthly" = "Aylık";
+
+// Premium Features
+"paywall_feature_unlimited_title" = "Sınırsız Şarkı";
+"paywall_feature_unlimited_desc" = "İstediğiniz kadar şarkı oluşturun";
+"paywall_feature_quality_title" = "Yüksek Kalite";
+"paywall_feature_quality_desc" = "Premium kalitede müzik üretimi";
+"paywall_feature_instrumental_title" = "Enstrümantal Mod";
+"paywall_feature_instrumental_desc" = "Şarkılarınızın enstrümantal versiyonlarını oluşturun";
+"paywall_feature_download_title" = "Şarkıları İndir";
+"paywall_feature_download_desc" = "Şarkılarınızı yüksek kalitede indirin";

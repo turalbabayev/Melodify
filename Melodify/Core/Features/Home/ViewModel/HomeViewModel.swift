@@ -6,6 +6,8 @@ class HomeViewModel: ObservableObject {
     @Published var credits: Int = 0
     @Published var userName: String = "Tural"
     @Published var subscriptionType: SubscriptionType = .free
+    @Published var greetingText: String = ""
+    @Published var subHeadlineText: String = ""
     
     // Yeni şablon verileri
     @Published var templates: [TemplateCardModel] = [
@@ -26,6 +28,7 @@ class HomeViewModel: ObservableObject {
     init() {
         setupUser()
         setupNotifications()
+        updateLocalizedTexts() // İlk yüklemede metinleri ayarla
         
         // CreditStateManager'dan değişiklikleri dinle
         creditManager.$currentCredits
@@ -49,10 +52,45 @@ class HomeViewModel: ObservableObject {
             name: .creditsDidUpdate,
             object: nil
         )
+        
+        // Dil değişikliğini dinle
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleLanguageChange),
+            name: .languageDidChange,
+            object: nil
+        )
     }
     
     @objc private func handleCreditsUpdate() {
         updateUserInfo()
+    }
+    
+    @objc private func handleLanguageChange() {
+        DispatchQueue.main.async { [weak self] in
+            self?.updateLocalizedTexts()
+        }
+    }
+    
+    private func updateLocalizedTexts() {
+        // Selamlama metnini güncelle
+        greetingText = getGreetingMessage()
+        // Alt başlığı güncelle
+        subHeadlineText = "main_subHeadline".localized
+    }
+    
+    private func getGreetingMessage() -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 6..<12:
+            return "main_good_morning".localized
+        case 12..<18:
+            return "main_good_afternoon".localized
+        case 18..<23:
+            return "main_good_evening".localized
+        default:
+            return "main_hello".localized
+        }
     }
     
     private func updateUserInfo() {
@@ -78,32 +116,11 @@ class HomeViewModel: ObservableObject {
             updateUserInfo()
         }
     }
-        
-    // Computed property: Mevcut saate göre selamlama metni üretir
-    var greetingMessage: String {
-        let hour = Calendar.current.component(.hour, from: Date())
-        switch hour {
-        case 6..<12:
-            return "main_good_morning".localized
-        case 12..<18:
-            return "main_good_afternoon".localized
-        case 18..<23:
-            return "main_good_evening".localized
-        default:
-            return "main_hello".localized // Gece 23'ten sonra "Hello" diyebiliriz
-        }
-    }
-    
-    // Emoji de dahil etmek istersen bu şekilde:
-    var greetingEmoji: String {
-        return "👋"
-    }
     
     // View'da ikinci satırda kullandığın "Let's see what can I do for you?"
     // gibi sabit metinleri de buraya koyabilirsin:
     var subHeadline: String {
         return "main_subHeadline".localized
-        
     }
     
     func togglePremium() {

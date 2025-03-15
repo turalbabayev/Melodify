@@ -29,6 +29,7 @@ struct MelodifyApp: App {
         WindowGroup {
             //MainView()
             LaunchScreen()
+            //PaywallView()
         }
     }
 }
