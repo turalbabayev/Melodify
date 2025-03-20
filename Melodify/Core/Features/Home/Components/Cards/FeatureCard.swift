@@ -6,6 +6,7 @@ struct LargeFeatureCardView: View {
     let subtitle: String
     let buttonText: String
     let iconName: String
+    let buttonAction: () -> Void
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -51,7 +52,7 @@ struct LargeFeatureCardView: View {
                 
                 // Alttaki Buton
                 Button(action: {
-                    // Buton aksiyonu
+                    buttonAction()
                 }) {
                     Text(buttonText)
                         .foregroundColor(.white)
@@ -79,6 +80,8 @@ struct SmallFeatureCardView: View {
     let title: String
     let buttonText: String
     let iconName: String
+    let buttonAction: () -> Void
+
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -110,7 +113,7 @@ struct SmallFeatureCardView: View {
                 
                 HStack {
                     Button(action: {
-                        // Buton aksiyonu
+                        buttonAction()
                     }) {
                         Text(buttonText)
                             .foregroundColor(.white)
@@ -148,10 +151,3 @@ struct SmallFeatureCardView: View {
     }
 }
 
-#Preview {
-    SmallFeatureCardView(
-        title: "Instrumental",
-        buttonText: "Create new",
-        iconName: "music.note"
-    )
-}

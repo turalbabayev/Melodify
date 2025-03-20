@@ -24,6 +24,13 @@
 "main_good_evening" = "Good Evening";
 "main_hello" = "Hello";
 "main_subHeadline" = "Let's see what can I do for you?";
+"main_large_card_title" = "AI Quick Music";
+"main_large_card_subtitle" = "Create a track with just one prompt";
+"main_large_card_buttontext" = "Generate";
+"main_small_card_title1" = "Instrumental";
+"main_small_card_title2" = "Custom Mode";
+"main_small_card_buttontext" = "Create New";
+
 
 
 // Tab Bar
@@ -93,3 +100,7 @@
 "paywall_feature_credits_yearly" = "3500 credits (350 songs) per year";
 "paywall_feature_quality_yearly" = "Ultra high quality music generation";
 "paywall_feature_priority_yearly" = "Maximum priority in queue";
+
+
+//Generate Music
+"remaning_credits" = "Remaining Credits:";

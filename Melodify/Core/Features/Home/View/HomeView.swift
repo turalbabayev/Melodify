@@ -14,7 +14,7 @@ struct HomeView: View {
                     
                     GreetingTextView(viewModel: viewModel)
                     
-                    FeatureCardView()
+                    FeatureCardView(mainViewModel: mainViewModel)
                     
                     SectionHeaderView()
                     
@@ -62,29 +62,35 @@ private struct GreetingTextView: View {
 }
 
 private struct FeatureCardView: View {
+    @ObservedObject var mainViewModel: MainViewModel
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
             // SOLDaki Büyük Kart
             LargeFeatureCardView(
-                title: "AI Quick Music",
-                subtitle: "Create a track with just one prompt",
-                buttonText: "Start Generating",
-                iconName: "bolt.fill"
-            )
+                title: "main_large_card_title".localized,
+                subtitle: "main_large_card_subtitle".localized,
+                buttonText: "main_large_card_buttontext".localized,
+                iconName: "bolt.fill",
+                buttonAction: {
+                    mainViewModel.navigateToCreate()
+                })
             
             // SAĞda 2 Küçük Kart
             VStack(spacing: 16) {
                 SmallFeatureCardView(
-                    title: "Instrumental",
-                    buttonText: "Create new",
-                    iconName: "music.note"
+                    title: "main_small_card_title1".localized,
+                    buttonText: "main_small_card_buttontext".localized,
+                    iconName: "music.note", buttonAction: {
+                        mainViewModel.navigateToCreate()
+                    }
                 )
                 
                 SmallFeatureCardView(
-                    title: "Vocal Song",
-                    buttonText: "Create new",
-                    iconName: "mic.fill"
-                )
+                    title: "main_small_card_title2".localized,
+                    buttonText: "main_small_card_buttontext".localized,
+                    iconName: "mic.fill") {
+                        mainViewModel.navigateToCreate()
+                    }
             }
         }
         .padding(.horizontal, 16)

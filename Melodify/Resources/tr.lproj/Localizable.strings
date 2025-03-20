@@ -24,6 +24,14 @@
 "main_good_evening" = "İyi Akşamlar";
 "main_hello" = "Merhaba";
 "main_subHeadline" = "Bakalım senin için neler yapabilirim?";
+"main_large_card_title" = "AI Hızlı Müzik";
+"main_large_card_subtitle" = "Sadece bir komutla bir parça oluşturun";
+"main_large_card_buttontext" = "Üret";
+"main_small_card_title1" = "Enstrümantal";
+"main_small_card_title2" = "Özel Mod";
+"main_small_card_buttontext" = "Oluştur";
+
+
 
 
 
@@ -89,3 +97,7 @@
 "paywall_feature_credits_yearly" = "Yıllık 3500 kredi (350 şarkı)";
 "paywall_feature_quality_yearly" = "Ultra yüksek kalitede müzik üretimi";
 "paywall_feature_priority_yearly" = "Maksimum öncelikli üretim";
+
+
+//Generate Music
+"remaning_credits" = "Kalan Kredi:";

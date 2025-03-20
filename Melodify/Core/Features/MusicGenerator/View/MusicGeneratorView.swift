@@ -94,15 +94,6 @@ private struct HeaderView: View {
             PromptView(viewModel: viewModel)
                 .padding(.bottom, 70)
             
-            // Kalan kredi göstergesi
-            HStack {
-                Image(systemName: "creditcard")
-                    .foregroundColor(.purple)
-                Text("Remaining Credits: \(viewModel.remainingCredits)")
-                    .foregroundColor(.gray)
-            }
-            .padding(.top, 10)
-            
         } else {
             ComposeView(viewModel: viewModel)
                 .padding(.bottom, 70)

@@ -14,7 +14,9 @@ struct PromptView: View {
     var body: some View {
         VStack(spacing: 16) {
             promptSection
+            instrumentalToggleSection
             saveButton
+            creaditDisplay
         }
         .padding(.horizontal, 8)
         .padding(.top, 8)
@@ -63,6 +65,34 @@ struct PromptView: View {
             characterCountView
         }
     }
+    
+    // MARK: - Instrumental Toggle Section
+    private var instrumentalToggleSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Toggle("Instrumental", isOn: $viewModel.musicPrompt.instrumental)
+                .toggleStyle(SwitchToggleStyle(tint: Color.purple))
+                .padding(.horizontal, 16)
+                .font(.system(size: 14))
+                .fontWeight(.bold)
+        }
+        .padding(.vertical)
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(0.2)).padding(.horizontal, 5))
+    }
+    
+    //MARK: - Remaning Creadits Section
+    private var creaditDisplay: some View {
+        HStack {
+            Image(systemName: "creditcard")
+                .foregroundColor(.purple)
+            Text("remaning_credits".localized)
+                .foregroundColor(.gray)
+            Text("\(viewModel.remainingCredits)")
+                .foregroundColor(.gray)
+        }
+        .padding(.top, 10)
+    }
+    
+    
     
     // MARK: - Character Count View
     private var characterCountView: some View {

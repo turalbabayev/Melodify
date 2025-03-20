@@ -86,7 +86,7 @@ struct LibraryView: View {
                                     image: "music.note",
                                     title: "Henüz Şarkı Yok",
                                     message: "Yeni bir şarkı oluşturmak için tıklayın",
-                                    buttonAction: { showMusicGenerator = true }
+                                    buttonAction: { mainViewModel.navigateToCreate() }
                                 )
                             } else {
                                 SongsTab(viewModel: viewModel)

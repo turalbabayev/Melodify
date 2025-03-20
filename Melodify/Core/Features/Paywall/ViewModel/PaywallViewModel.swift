@@ -26,7 +26,7 @@ class PaywallViewModel: ObservableObject {
     init() {
         // İlk yüklemede varsayılan plan (yıllık) için feature'ları ayarla
         updateFeatures(for: plans[0])
-        playBackgroundMusic()
+        //playBackgroundMusic()
     }
     
     private func playBackgroundMusic() {
