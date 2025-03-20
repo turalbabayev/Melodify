@@ -16,6 +16,10 @@ class MusicGeneratorViewModel: ObservableObject {
     @Published var generatedMusic: [GeneratedMusic] = []
     @Published var showCreditAlert = false
     @Published var remainingCredits: Int = 0
+    @Published var placeholder: String?
+    @Published var deneme: Int = 0
+    @Published var showErrorAlert = false
+    @Published var errorMessage = ""
     
     enum Tab {
         case prompt, compose
@@ -41,8 +45,8 @@ class MusicGeneratorViewModel: ObservableObject {
             return 
         }
         
-        // Kredi kontrolü
-        guard userService.updateCredits(-1) else {
+        // Kredi kontrolü (12 kredi)
+        guard userService.updateCredits(-12) else {
             showCreditAlert = true
             return
         }
@@ -64,8 +68,8 @@ class MusicGeneratorViewModel: ObservableObject {
             return
         }
         
-        // Kredi kontrolü
-        guard userService.updateCredits(-1) else {
+        // Kredi kontrolü (12 kredi)
+        guard userService.updateCredits(-12) else {
             showCreditAlert = true
             return
         }
@@ -95,26 +99,6 @@ class MusicGeneratorViewModel: ObservableObject {
         isLoading = true
         error = nil
         
-        // 2 tane "generating" durumunda şarkı oluştur
-        let generatingSongs = [
-            GeneratedMusic(
-                id: UUID().uuidString,
-                title: "Creating your first song...",
-                prompt: prompt,
-                status: .PENDING
-            ),
-            GeneratedMusic(
-                id: UUID().uuidString,
-                title: "Preparing your second song...",
-                prompt: prompt,
-                status: .PENDING
-            )
-        ]
-        
-        // MainViewModel'e ekle ve Library'ye yönlendir
-        mainViewModel.addGeneratedSongs(generatingSongs)
-        mainViewModel.selectedTab = .library
-        
         Task {
             do {
                 let taskId = try await service.generateMusic(
@@ -128,74 +112,90 @@ class MusicGeneratorViewModel: ObservableObject {
                 print("✅ API Request Successful")
                 print("📋 Task ID: \(taskId)")
                 
+                // Başarılı durumda library'ye yönlendir ve pending şarkı ekle
+                await MainActor.run {
+                    let pendingMusic = GeneratedMusic(
+                        id: UUID().uuidString,
+                        title: "Creating your music...",
+                        prompt: prompt,
+                        status: .PENDING
+                    )
+                    mainViewModel.addGeneratedSongs([pendingMusic])
+                    mainViewModel.selectedTab = .library
+                }
+                
                 try await pollTaskStatus(taskId: taskId)
                 
             } catch {
+                await MainActor.run {
+                    isLoading = false
+                    self.error = error.localizedDescription
+                    self.errorMessage = "Müzik oluşturulurken bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+                    self.showErrorAlert = true
+                    
+                    // Hata durumunda kredileri geri yükle
+                    userService.updateCredits(12)
+                }
                 print("❌ API Request Failed")
                 print("💥 Error: \(error.localizedDescription)")
-                
-                await MainActor.run {
-                    self.error = error.localizedDescription
-                    self.isLoading = false
-                }
             }
         }
     }
     
     private func pollTaskStatus(taskId: String) async throws {
-        let delaySeconds: UInt64 = 10
-        var attempts = 0
-        let maxAttempts = 120
-        
-        while attempts < maxAttempts {
-            attempts += 1
+            let delaySeconds: UInt64 = 10
+            var attempts = 0
+            let maxAttempts = 120
             
-            let taskData = try await service.checkTaskStatus(taskId: taskId)
-            
-            // Durumu güncelle
-            await MainActor.run {
-                // Tüm generating durumundaki şarkıları güncelle
-                mainViewModel.generatedSongs = mainViewModel.generatedSongs.map { song in
-                    if song.status == .PENDING {
-                        var updatedSong = song
-                        updatedSong.status = taskData.status
-                        updatedSong.title = getStatusTitle(taskData.status)
-                        return updatedSong
+            while attempts < maxAttempts {
+                attempts += 1
+                
+                let taskData = try await service.checkTaskStatus(taskId: taskId)
+                
+                // Durumu güncelle
+                await MainActor.run {
+                    // Tüm generating durumundaki şarkıları güncelle
+                    mainViewModel.generatedSongs = mainViewModel.generatedSongs.map { song in
+                        if song.status == .PENDING {
+                            var updatedSong = song
+                            updatedSong.status = taskData.status
+                            updatedSong.title = getStatusTitle(taskData.status)
+                            return updatedSong
+                        }
+                        return song
                     }
-                    return song
+                }
+                
+                switch taskData.status {
+                case .SUCCESS:
+                    if let response = taskData.response {
+                        await MainActor.run {
+                            // Önce tüm PENDING durumundaki şarkıları kaldır
+                            mainViewModel.generatedSongs.removeAll { $0.status != .SUCCESS }
+                            
+                            // Sonra yeni şarkıları ekle
+                            mainViewModel.addGeneratedSongs(response.sunoData)
+                            self.isLoading = false
+                        }
+                    }
+                    return
+                    
+                case .PENDING, .TEXT_SUCCESS, .FIRST_SUCCESS:
+                    try await Task.sleep(nanoseconds: delaySeconds * 1_000_000_000)
+                    continue
+                    
+                case .CREATE_TASK_FAILED, .GENERATE_AUDIO_FAILED,
+                     .CALLBACK_EXCEPTION, .SENSITIVE_WORD_ERROR:
+                    if let errorMessage = taskData.errorMessage {
+                        throw MusicGenerationError.customError(errorMessage)
+                    } else {
+                        throw MusicGenerationError.invalidResponse
+                    }
                 }
             }
             
-            switch taskData.status {
-            case .SUCCESS:
-                if let response = taskData.response {
-                    await MainActor.run {
-                        // Önce tüm PENDING durumundaki şarkıları kaldır
-                        mainViewModel.generatedSongs.removeAll { $0.status != .SUCCESS }
-                        
-                        // Sonra yeni şarkıları ekle
-                        mainViewModel.addGeneratedSongs(response.sunoData)
-                        self.isLoading = false
-                    }
-                }
-                return
-                
-            case .PENDING, .TEXT_SUCCESS, .FIRST_SUCCESS:
-                try await Task.sleep(nanoseconds: delaySeconds * 1_000_000_000)
-                continue
-                
-            case .CREATE_TASK_FAILED, .GENERATE_AUDIO_FAILED,
-                 .CALLBACK_EXCEPTION, .SENSITIVE_WORD_ERROR:
-                if let errorMessage = taskData.errorMessage {
-                    throw MusicGenerationError.customError(errorMessage)
-                } else {
-                    throw MusicGenerationError.invalidResponse
-                }
-            }
+            throw MusicGenerationError.timeoutError
         }
-        
-        throw MusicGenerationError.timeoutError
-    }
     
     private func getStatusTitle(_ status: TaskStatus) -> String {
         switch status {
@@ -291,4 +291,42 @@ class MusicGeneratorViewModel: ObservableObject {
     func useCredit() {
         creditManager.updateCredits(-1)
     }
+    
+    func updateWithPrompt(_ template: MusicPromptTemplate) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            // Önce tab'i prompt'a çevir
+            self.selectedTab = .prompt
+            
+            // Placeholder'ı güncelle
+            self.placeholder = template.prompt
+            
+            self.musicPrompt.prompt = template.prompt
+            
+            self.musicPrompt.instrumental = template.isInstrumental
+            
+            self.deneme = 700
+            
+            // UI'ı zorla güncelle
+            self.objectWillChange.send()
+            
+            print("🔄 Placeholder güncellendi:")
+            print("Tab değiştirildi: \(self.selectedTab)")
+            print("Yeni placeholder: \(self.placeholder ?? "nil")")
+        }
+    }
+    
+    func resetState() {
+        // State'i başlangıç değerlerine sıfırla
+        musicPrompt = MusicPrompt()
+        selectedTab = .prompt
+        placeholder = nil
+        isLoading = false
+        error = nil
+        
+        print("🔄 MusicGenerator state sıfırlandı")
+    }
+    
+   
 }

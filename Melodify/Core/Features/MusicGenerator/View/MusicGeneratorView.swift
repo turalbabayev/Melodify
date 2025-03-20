@@ -9,9 +9,12 @@ import SwiftUI
 
 struct MusicGeneratorView: View {
     @StateObject private var viewModel: MusicGeneratorViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     
     init(mainViewModel: MainViewModel) {
-        _viewModel = StateObject(wrappedValue: MusicGeneratorViewModel(mainViewModel: mainViewModel))
+        self.mainViewModel = mainViewModel
+        let viewModel = MusicGeneratorViewModel(mainViewModel: mainViewModel)
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -46,6 +49,20 @@ struct MusicGeneratorView: View {
             // }
         } message: {
             Text("You don't have enough credits to generate music. Please purchase more credits to continue.")
+        }
+        .alert("Hata", isPresented: $viewModel.showErrorAlert) {
+            Button("Tamam", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage)
+        }
+        .overlay {
+            if viewModel.isLoading {
+                LoadingView()
+            }
+        }
+        .onAppear {
+            // View yüklendiğinde set et
+            mainViewModel.setMusicGeneratorViewModel(viewModel)
         }
     }
 }

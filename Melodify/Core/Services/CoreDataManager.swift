@@ -5,6 +5,8 @@ class CoreDataManager {
     
     private let songContainer: NSPersistentContainer
     
+    let songContext: NSManagedObjectContext
+    
     private init() {
         // Song Container
         songContainer = NSPersistentContainer(name: "SongEntity")
@@ -13,10 +15,8 @@ class CoreDataManager {
                 print("Song Core Data failed to load: \(error.localizedDescription)")
             }
         }
-    }
-    
-    private var songContext: NSManagedObjectContext {
-        songContainer.viewContext
+        
+        songContext = songContainer.viewContext
     }
     
     func saveSong(_ generatedMusic: GeneratedMusic) {

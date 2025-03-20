@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PromptView: View {
-    @StateObject var viewModel: MusicGeneratorViewModel
+    @ObservedObject var viewModel: MusicGeneratorViewModel
     @State private var isPromptExpanded: Bool = true
     
     var body: some View {
@@ -56,11 +56,13 @@ struct PromptView: View {
     // MARK: - Prompt TextField
     private var promptTextField: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CustomTextEditor(text: $viewModel.musicPrompt.prompt,
-                           placeholder: "Write your prompt",
-                           maxCharacterLimit: 400,
-                           dynamicHeight: 80)
-                .padding(.bottom, 10)
+            CustomTextEditor(
+                text: $viewModel.musicPrompt.prompt,
+                placeholder: viewModel.placeholder ?? "Write your prompt...",
+                maxCharacterLimit: 600,
+                dynamicHeight: 80
+            )
+            .padding(.bottom, 10)
             
             characterCountView
         }
@@ -98,7 +100,7 @@ struct PromptView: View {
     private var characterCountView: some View {
         HStack {
             Spacer()
-            Text("\(viewModel.musicPrompt.prompt.count)/400")
+            Text("\(viewModel.musicPrompt.prompt.count)/\(viewModel.deneme)")
                 .foregroundColor(viewModel.musicPrompt.prompt.count >= 400 ? .purple : .white)
                 .font(.system(size: 12))
         }

@@ -19,7 +19,6 @@ struct HomeView: View {
                     SectionHeaderView()
                     
                     SectionFooterView(viewModel: viewModel)
-
                 }
                 .padding(.bottom, 48)
             }
@@ -35,6 +34,7 @@ struct HomeView: View {
             )
             .ignoresSafeArea())
         }
+        .environmentObject(mainViewModel)
     }
     
     
@@ -100,19 +100,11 @@ private struct FeatureCardView: View {
 private struct SectionHeaderView: View {
     var body: some View {
         HStack {
-            Text("Trending Templates 🔥")
+            Text("Music Categories 🎵")
                 .font(.headline)
                 .foregroundColor(.white)
             
             Spacer()
-            
-            Button(action: {
-                // İşlem burada yapılacak.
-            }) {
-                Text("See all")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.8))
-            }
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 16)
@@ -121,35 +113,79 @@ private struct SectionHeaderView: View {
 
 private struct SectionFooterView: View {
     @ObservedObject var viewModel: HomeViewModel
+    @EnvironmentObject var mainViewModel: MainViewModel
+    let categories = MusicCategory.categories
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
+            // Sol kolon
             VStack {
-                ForEach(viewModel.templates.prefix(viewModel.templates.count / 2), id: \.self) { template in
-                    NavigationLink(destination: PaywallView()) {
-                        Image(template.imageName)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .frame(height: CGFloat.random(in: 130...300))
-                            .cornerRadius(10)
+                ForEach(categories.prefix(categories.count / 2), id: \.self) { category in
+                    NavigationLink(destination: MusicCategoryDetailView(
+                        category: category,
+                        mainViewModel: mainViewModel
+                    )) {
+                        CategoryCardView(category: category)
                     }
                 }
             }
+            
+            // Sağ kolon
             VStack {
-                ForEach(viewModel.templates.suffix(viewModel.templates.count / 2), id: \.self) { template in
-                    NavigationLink(destination: PaywallView()) {
-                        Image(template.imageName)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(minWidth: 0, maxWidth: .infinity)
-                            .frame(height: CGFloat.random(in: 130...300))
-                            .cornerRadius(10)
+                ForEach(categories.suffix(categories.count / 2), id: \.self) { category in
+                    NavigationLink(destination: MusicCategoryDetailView(
+                        category: category,
+                        mainViewModel: mainViewModel
+                    )) {
+                        CategoryCardView(category: category)
                     }
                 }
             }
         }
         .padding(.horizontal, 16)
+    }
+}
+
+// Yeni kategori kartı view'ı
+private struct CategoryCardView: View {
+    let category: MusicCategory
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Kategori resmi
+            Image(category.imageName)
+                .resizable()
+                .scaledToFill()
+                .frame(minWidth: 0, maxWidth: .infinity)
+                .frame(height: CGFloat.random(in: 130...300))
+                .overlay(
+                    LinearGradient(
+                        colors: [
+                            .clear,
+                            .black.opacity(0.3),
+                            .black.opacity(0.7)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+            
+            // Kategori bilgileri
+            VStack(alignment: .leading, spacing: 4) {
+                Text(category.name)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Text(category.description)
+                    .font(.system(size: 12))
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+        }
+        .background(Color.white.opacity(0.05))
+        .cornerRadius(16)
     }
 }
 

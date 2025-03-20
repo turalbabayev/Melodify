@@ -15,7 +15,7 @@ class CreditManager {
     
     func useCredit() {
         if hasEnoughCredits() {
-            UserDefaults.standard.credits -= 1
+            UserDefaults.standard.credits -= 12
         }
     }
     
